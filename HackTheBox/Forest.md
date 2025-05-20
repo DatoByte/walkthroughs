@@ -7,7 +7,7 @@ Comenzamos realizando un escaneo de puertos abiertos con nmap.
 
 ![Pasted image 20250313124032](https://github.com/user-attachments/assets/cce45e1d-40db-41e1-8c41-31f49d98e1b7)
 
-Sólo con visualizar los puertos abiertos podemos intuir que nos estamos enfrentándonos a un DC. Una vez conocemos estos puertos abiertos, vamos a observar más a fondo qué servicios están corriendo y bajo qué versiones.
+Sólo con visualizar los puertos abiertos podemos intuir que estamos enfrentándonos a un DC. Una vez conocemos estos puertos abiertos, vamos a observar más a fondo qué servicios están corriendo y bajo qué versiones.
 
 ``nmap 10.10.10.161 -sCV -p53,88,135,139,389,445,464,593,636,3268,3269,5985,9389,47001,49664,49665,49666,49667,49671,49676,49677,49684,49703 -oN target``
 
