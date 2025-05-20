@@ -7,13 +7,13 @@ Comenzamos realizando un escaneo de puertos abiertos con nmap.
 
 ![Pasted image 20250313124032](https://github.com/user-attachments/assets/cce45e1d-40db-41e1-8c41-31f49d98e1b7)
 
-Sólo con visualizar los puertos abiertos podemos hacernos a la idea de que estamos enfrentándonos a un DomainController. Una vez tenemos estos puertos, vamos a observar más a fondo qué servicios están corriendo y bajo qué versiones.
+Sólo con visualizar los puertos abiertos podemos intuir que nos estamos enfrentándonos a un DC. Una vez conocemos estos puertos abiertos, vamos a observar más a fondo qué servicios están corriendo y bajo qué versiones.
 
 ``nmap 10.10.10.161 -sCV -p53,88,135,139,389,445,464,593,636,3268,3269,5985,9389,47001,49664,49665,49666,49667,49671,49676,49677,49684,49703 -oN target``
 
 ![Pasted image 20250313124107](https://github.com/user-attachments/assets/24248001-b40c-41af-8833-7fe81a49fb73)
 
-Con este otro output de nmap tenemos todavía más claro que estamos ante un DC. A su vez, empezamos a tener información del dominio: htb.local
+Con este otro output de nmap tenemos todavía más claro que estamos ante un DC. A su vez, empezamos a tener información de utilidad para resolver el laboratorio. El dominio es htb.local.
 
 Vamos a utilizar la herramienta netexec para enumerar un poco más sobre el DC.
 
@@ -21,7 +21,7 @@ Vamos a utilizar la herramienta netexec para enumerar un poco más sobre el DC.
 
 ![Pasted image 20250313124206](https://github.com/user-attachments/assets/a171a0fe-eadb-4794-b73e-f08fe7ad8bed)
 
-La máquina se llama FOREST. Y confirmamos que el dominio es htb.local, por lo que lo añadimos al ``/etc/hosts``.
+Confirmamos que el dominio es htb.local y que la máquina se llama FOREST, por lo que lo añadimos al ``/etc/hosts``.
 
 ![Pasted image 20250313124246](https://github.com/user-attachments/assets/808e346e-b59b-469b-bc41-74a39863a464)
 
