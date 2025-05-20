@@ -1,4 +1,4 @@
-# 🧠 Walkthroughs de máquinas para pentesting
+# 🧠 Walkthroughs de CTFs
 
 Este repositorio es mi pequeña forma de aportar a la comunidad, especialmente a quienes están empezando en el mundo del pentesting, igual que otras personas lo hicieron conmigo.
 
