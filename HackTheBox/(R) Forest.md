@@ -1,5 +1,5 @@
-Máquina: Forest
-Dificultad: Easy
+![forest info](https://github.com/user-attachments/assets/d884f000-e2bb-4f2d-a4df-8ef484c16cd9)
+
 
 
 ``sudo nmap 10.10.10.161 -sS -p- --open --min-rate 5000 -n -Pn -oG allPorts``
