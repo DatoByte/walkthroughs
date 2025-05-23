@@ -1,4 +1,4 @@
-![active](https://github.com/user-attachments/assets/153e586a-d124-40c4-8467-0c252b4a0396)
+![Active (1)](https://github.com/user-attachments/assets/a0ee55d3-ffbf-4642-a114-e1aca2f30836)
 
 Comenzamos enumerando puertos abiertos con nmap.
 
