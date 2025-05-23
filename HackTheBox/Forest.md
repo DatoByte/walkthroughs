@@ -1,4 +1,5 @@
-![forest info](https://github.com/user-attachments/assets/d884f000-e2bb-4f2d-a4df-8ef484c16cd9)
+![Forest](https://github.com/user-attachments/assets/79e46783-e17c-4c81-a18c-57deb8653752)
+
 
 
 Comenzamos realizando un escaneo de puertos abiertos con nmap.
