@@ -132,7 +132,7 @@ Son credenciales válidas. Y si las probamos para winRM:
 
 ![Pasted image 20250318133030](https://github.com/user-attachments/assets/188d617a-f6fd-43aa-b46a-bc7f7b8c178f)
 
-Bingo. Pwn3d!
+Bingo, tenemos Pwn3d!
 Por fin un usuario que forma parte del grupo Remote Management Users y que nos permite conectarnos.
 
 Nos conectamos con evilwin-rm:
