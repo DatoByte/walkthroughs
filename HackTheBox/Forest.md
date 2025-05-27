@@ -102,7 +102,6 @@ En C:\Users\svc-alfresco\Desktop encontramos la flag de usuario:
 
 
 
-
 # PRIVESC
 
 Vamos a utilizar la herramienta BloodHound para ayudarnos en la escalada de privilegios. Para ello:
@@ -115,9 +114,9 @@ Vamos a utilizar la herramienta BloodHound para ayudarnos en la escalada de priv
 
 ``bloodhound --no-sandbox &>/dev/null & disown``
 
-Introducimos nuestras credenciales de bloodhound.
+Introducimos nuestras credenciales.
 
-Como en este escenario en concreto la víctima tiene el servicio DNS corriendo, podemos enumerar vía bloodhound-python sin necesidad de compartir sharphound:
+Como en este escenario en concreto la víctima tiene el servicio DNS corriendo, podemos enumerar vía bloodhound-python sin necesidad de compartir SharpHound:
 
 ``bloodhound-python -u 'svc-alfresco' -p 's3rvice' -d htb.local -c all -ns 10.10.10.161``
 
