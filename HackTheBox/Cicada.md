@@ -50,6 +50,7 @@ Podemos visualizar cositas interesantes. Parece un mensaje default para nuevas c
 Dado que con el usuario guest podemos enumerar los archivos compartidos, vamos a probar a utilizar --rid-brute para enumerar usuarios.
 
 ``netexec smb 10.10.11.35 -u 'guest' -p '' --rid-brute``
+
 ![Pasted image 20250318112623](https://github.com/user-attachments/assets/9b31db8e-a51a-48bb-81ce-186618c0f9eb)
 
 Bien. Nos saca output. Lo que vamos a hacer es redirigirlo todo a un archivo para hacer un tratamiento de los datos para quedarnos sólo con los nombres de usuario y generar un diccionario de usuarios.
