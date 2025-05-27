@@ -3,6 +3,7 @@
 Comenzamos enumerando puertos abiertos con nmap.
 
 ``sudo nmap 10.10.10.100 -sS -p- --open --min-rate 5000 -n -Pn -oG allPorts``
+![1](Images/1.png)
 
 ![Pasted image 20250313105053](https://github.com/user-attachments/assets/43fe3451-31a8-4d10-bf9b-ab638880287d)
 
