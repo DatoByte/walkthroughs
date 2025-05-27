@@ -18,15 +18,11 @@ Confirmamos que es un DC. A su vez, podemos empezar a ver cositas, como que el d
 
 ![Pasted image 20250313105324](https://github.com/user-attachments/assets/d9c8b691-10ab-4097-9e7c-e6c6764f03d7)
 
-
-Nombre máquina: DC
-
-Dominio: active.htb
+Confirmamos que el dominio es active.htb, que la máquina se llama dc y que tiene un WinServer 2008.
 
 Añadimos esta información al /etc/hosts.
 
 ![active etchosts](https://github.com/user-attachments/assets/13591f9d-94c3-4bbe-ad59-c2e98c30f03e)
-
 
 
 Para continuar enumerando información que pueda ser de utilidad, vamos a intentar ver qué recursos se están compartiendo:
