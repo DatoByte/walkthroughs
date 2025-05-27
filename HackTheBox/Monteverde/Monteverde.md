@@ -7,7 +7,6 @@ Comenzamos realizando un escaneo de los puertos abiertos de la máquina víctima
 
 ![2](Images/2.png)
 
-
 Dado el output anterior podemos pensar que estamos ante un DC, pero vamos a realizar otro escaneo sobre estos puertos abiertos para saber qué versiones y servicios están corriendo.
 
 ``nmap 10.10.10.172 -sCV -p53,135,139,389,445,464,636,9389,49667,49673,49674,49693 -oN target -Pn``
