@@ -87,14 +87,14 @@ Una vez lo tenemos en la máquina víctima, miramos el contenido del archivo azu
 
 Aparece claramente un valor en el campo de contraseña: 4n0therD4y@n0th3r
 
-Se hace password spraying contra todos los usuarios del dominio para esta contraseña:
+Aunque todo apunta a que es del usuario mhope (ya que está en mhope\azure.xml), se hace password spraying contra todos los usuarios del dominio para esta contraseña:
 
 ``netexec smb 10.10.10.172 -u users.txt -p '4n0therD4y@n0th3r$' --continue-on-success``
 
 ![12](Images/12.png)
 
 
-Estupendo, fuunciona para mhope.
+Estupendo, confirmamos que funciona para mhope.
 
 Por SMB se comparte exactamente lo mismo para mhope que para SABatchJobs.
 
