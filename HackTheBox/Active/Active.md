@@ -96,7 +96,7 @@ Como tenemos credenciales, podemos probar kerberoasting para ver si capturamos a
 
 ![16](Images/16.png)
 
-Ojo. Tenemos el TGS del usuario Administrator. Si conseguimos descifrarlo, está hecho. Nos copiamos el contenido en un archivo. Ej: admintgs
+Ojo, tenemos el TGS del usuario Administrator. Si conseguimos descifrarlo, está hecho. Nos copiamos el contenido en un archivo. Ej: admintgs
 
 ![17](Images/17.png)
 
