@@ -136,7 +136,6 @@ Ejemplos:
 
 ![22](Images/22.png)
 
-
 Recogemos la flag de usuario en: C:\Users\SVC_TGS\Desktop:
 
 ![32](Images/23.png)
