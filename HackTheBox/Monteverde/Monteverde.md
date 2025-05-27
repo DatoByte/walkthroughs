@@ -20,14 +20,14 @@ Para seguir enumerando información de la máquina, vamos a hacer uso de netexec
 
 ``netexec smb 10.10.10.172``
 
-![4](Images/5.png)
+![4](Images/4.png)
 
 
 Confirmamos que el dominio es megabank.local, que la máquina se llama Monteverde y que es un WServer 2019.
 
 Añadimos esta información a nuestro /etc/hosts:
 
-![6](Images/6.png)
+![5](Images/5.png)
 
 
 Una vez sabemos esto, podemos continuar con la enumeración.
@@ -36,14 +36,14 @@ Nos conectamos por RPC con null sesion para hacer una enumeración de los usuari
 
 ``rpcclient -U '' 10.10.10.172 -N -c enumdomusers > rpcusers.txt``
 
-![7](Images/7.png)
+![6](Images/6.png)
 
 
 Para generarnos un diccionario de usuarios necesitamos hacer un tratamiento de los datos. En concreto, nos quedaremos con lo que está dentro de los primeros corchetes.
 
 ``cat rpcusers.txt | cut -d '[' -f2 | cut -d ']' -f1``
 
-![8](Images/8.png)
+![7](Images/7.png)
 
 
 Una vez tenemos un listado de usuarios, podemos intentar técnicas como asreproasting. No obstante, ninguno de los usuarios tiene NoPreAuth habilitado.
@@ -52,7 +52,7 @@ Dada esta situación y que sólo tenemos un listado de usuarios, podemos probar 
 
 ``netexec smb 10.10.10.172 -u users.txt -p users.txt --continue-on-success``
 
-![9](Images/9.png)
+![8](Images/8.png)
 
 
 Nos encuentra unas credenciales válidas.
@@ -62,7 +62,7 @@ Vamos a echar un vistazo a los recursos que se comparten con este usuario por SM
 
 ``netexec smb 10.10.10.172 -u 'SABatchJobs' -p 'SABatchJobs' --shares``
 
-![10](Images/10.png)
+![9](Images/9.png)
 
 
 Aparecen directorios interesantes con permisos de lectura: azure_uploads y users
@@ -76,6 +76,9 @@ Comenzamos conectándonos al directorio users y nos traemos todo el contenido:
 ``recurse on``
 
 ``mget *``
+
+![10](Images/10.png)
+
 
 Una vez lo tenemos en la máquina víctima, miramos el contenido del archivo azure.xml:
 
@@ -101,7 +104,7 @@ Dado que el DC tiene un servidor DNS corriendo, no es necesario estar dentro de 
 
 ``bloodhound-python -u 'mhope' -p '4n0therD4y@n0th3r$' -d megabank.local -c all -ns 10.10.10.172``
 
-![31](Images/13.png)
+![13](Images/13.png)
 
 
 Una vez hemos recolectado la data, levantamos neo4j:
