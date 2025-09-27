@@ -44,7 +44,7 @@ Tenemos una imagen y una contraseña, por lo que todo induce a la esteganografí
 
 Y metemos la contraseña: `3xtr4ctd4t4`
 
-Nos extrae data.txt
+Nos extrae data.txt. Vamos a echarle un vistazo.
 
 Es un mensaje:
 ![7](Images/7.png)
