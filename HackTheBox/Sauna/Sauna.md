@@ -202,7 +202,7 @@ Una vez hemos compartido la herramienta, la ejecutamos:
 
 ``.\winpeas.exe``
 
-Si echamos un vistazo a su output encontramos credenciales de AutoLogon:
+Si echamos un vistazo a su output encontramos credenciales de ``AutoLogon``:
 ![33](Images/33.png)
 ``svc_loangmanager``:``Moneymakesthworldgoround!``
 
@@ -261,7 +261,7 @@ Repetimos proceso para HSmith y svc_loanmgr.
 
 Si exploramos un poco a través de BloodHound vemos algo interesante.
 
-Si vemos la información del nodo de svc_loanmgr (node info) y vamos al apartado ``First Degree Object Control``, vemos:
+Si vemos la información del nodo de ``svc_loanmgr`` (node info) y vamos al apartado ``First Degree Object Control``, vemos:
 ![43](Images/43.png)
 
 
