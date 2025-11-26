@@ -60,13 +60,15 @@ Si queremos ver la estructura de todos los datos descargados:
 
 Y si echamos un vistazo a Groups.xml : 
 
-![11](Images/10.png)
+![10](Images/10.png)
 
 Vemos claramente una referencia al usuario SVC_TGS y la contraseña encriptada. Para poder romperla hacemos uso de la utilidad ``gpp-decrypt``.
 
 ``gpp-decrypt 'CLAVE'``
 
-![12](Images/12.png)
+![11](Images/11.png)
+
+
 
 Tenemos la contraseña, y por tanto, las posibles credenciales -> SVC_TGS : GPPstillStandingStrong2k18
 
@@ -74,17 +76,21 @@ Vamos a ver si son válidas con netexec.
 
 ``netexec smb 10.10.10.100 -u 'SVC_TGS' -p 'GPPstillStandingStrong2k18'``
 
-![13](Images/13.png)
+![12](Images/12.png)
+
+
 
 Nos pone [+], por lo que son credenciales válidas. Una vez sabemos esto, podemos seguir husmeando para ver qué se esta compartiendo para este usuario por SMB:
 
 ``netexec smb 10.10.10.100 -u 'SVC_TGS' -p 'GPPstillStandingStrong2k18' --shares``
 
-![14](Images/14.png)
+![13](Images/13.png)
+
+
 
 Lo único que puede parecer interesante, a priori, es el directorio Users. Si nos conectamos con smbclient con estas credenciales, vemos que es el directorio C:\Users. De hecho, podemos acceder a user.txt dentro del directorio SVC_TGS, pero en un escenario como el de la OSCP no sirve con obtener la flag de esta forma porque no tenemos una consola interactiva.
 
-![15](Images/15.png)
+![14](Images/14.png)
 
 Vale, tenemos unas credenciales válidas, pero no tenemos forma de conectarnos: no hay winRM, no hay RDP y no podemos hacer uso de psexec/wmiexec por falta de privilegios.
 
@@ -138,7 +144,7 @@ Ejemplos:
 
 Recogemos la flag de usuario en: C:\Users\SVC_TGS\Desktop:
 
-![32](Images/23.png)
+![23](Images/23.png)
 
 Y por último, recogemos la flag de Administrador en C:\Users\Administrator\Desktop:
 
