@@ -16,9 +16,7 @@ Vemos que existe un Tomcat 9.0.88. Vamos a echarle un vistazo a nivel de navegad
 
 ![4](Images/4.png)
 
-Tenemos la página default de tomcat.
-
-Si husmeamos un poco, no vemos nada interesante.
+Tenemos la página default de tomcat. Si husmeamos un poco, no vemos nada interesante.
 
 Vamos a intentar loguearnos con credenciales básicas/default en la ruta predeterminada del panel de login de tomcat: ``/manager/html``.
 
