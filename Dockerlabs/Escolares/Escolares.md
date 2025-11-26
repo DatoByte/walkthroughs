@@ -6,7 +6,7 @@ Comenzamos realizando un escaneo de los puertos abiertos de la máquina víctima
 
 ![2](Images/2.png)
 
-Todo apunta a que están corriendo SSH y HTTP (``well-known ports``, pero vamos lanzar otro escaneo sobre estos puertos abiertos para ver qué servicios y versiones están corriendo en dichos puertos.
+Todo apunta a que están corriendo SSH y HTTP (``well-known ports``), pero vamos lanzar otro escaneo sobre estos puertos abiertos para ver qué servicios y versiones están corriendo en dichos puertos.
 
 ``nmap 172.17.0.2 -sCV -p22,80``
 
@@ -81,7 +81,7 @@ A nivel de navegador encontramos un post que nos da información:
 
 Confirmamos que existe un usuario en relación a Luis: ``luisillo``.
 
-A su vez, ``wpscan`` nos lo confirma:
+A su vez, ``wpscan`` no deja dudas al respecto:
 
 ![16](Images/16.png)
 
@@ -95,21 +95,19 @@ Se intenta, pero no se encuentran credenciales válidas. Vamos a generar un dicc
 
 ``cewl -m 4 --with-numbers 'http://172.17.0.2' > dict.txt``
 
-![17](Images/17.png)
-
-Lanzamos nuevamente fuerza bruta, pero con el diccionario creado con cewl:
+Lanzamos nuevamente fuerza bruta, pero con el diccionario que acabamos de crear con cewl:
 
 ``wpscan --url http://escolares.dl/wordpress -U luisillo -P dict.txt -t 30``
 
-Pero nuevamente, tampoco se consigue encontrar la contraseña.
+Nuevamente, tampoco se consigue encontrar la contraseña.
 
-Dado que nuestro usuario objetivo es ``luisillo`` y en ``/profesores.html`` hay información personal, vamos a hacer uso de la herramienta ``cupp``.
+Dado que nuestro usuario objetivo es ``luisillo`` y en ``/profesores.html`` hay información personal, vamos a hacer uso de la herramienta ``cupp`` para generar un diccionario personalizado basado en sus datos.
 
 ``cupp -i``
 
 ![18](Images/18.png)
 
-Nos ha generado un diccionario (luis.txt) con 34524 líneas:
+Nos ha generado un diccionario (``luis.txt``) con 34524 líneas:
 
 ![19](Images/19.png)
 
@@ -127,14 +125,14 @@ Si introducimos las credenciales en el panel de login, funcionan. Estamos dentro
 ![21](Images/21.png)
 
 
-Hacemos click en recordarlo más tarde.
+Hacemos click en: ``Recuérdamelo más tarde``.
 
 Si indagamos un poco por el panel de administración, vemos que existe el plugin ``wp file manager``:
 
 ![22](Images/22.png)
 
 
-Este plugin nos permite subir archivos, por lo que vamos a subir una webshell a ``/wp-content/uploads``. Cabe destacar que con añadiendo un parámetro a ``wpscan`` es bastante probable que también nos lo hubiese reportado.
+Este plugin nos permite subir archivos, por lo que vamos a subir una webshell a ``/wp-content/uploads``. Cabe destacar que añadiendo un parámetro a ``wpscan`` es bastante probable que también nos lo hubiese reportado.
 
 Preparamos nuestra webshell:
 
@@ -151,7 +149,7 @@ Si accedemos a ella a nivel de navegador y, por ejemplo, al parámetro ``cmd`` l
 
 ![26](Images/26.png)
 
-Se está ejecutando correctamente: tenemos RCE. Podemos mandarnos una reverse shell o indagar un poco desde la propia webshell el sistema objetivo:
+Se está ejecutando correctamente el comando id: tenemos RCE. Podemos mandarnos una reverse shell o indagar un poco desde la propia webshell el sistema objetivo:
 
 ![27](Images/27.png)
 
@@ -179,6 +177,8 @@ Si este vector de ataque no hubiese existido (o no hubiese encontrado la contras
 Muy buenas noticias, podemos hacer uso de ``/usr/bin/awk`` sin proporcionar la contraseña de root: ``https://gtfobins.github.io/gtfobins/awk/#sudo``
 
 ![31](Images/31.png)
+
+``sudo /usr/bin/awk 'BEGIN {system("/bin/sh")}'``
 
 ![32](Images/32.png)
 
