@@ -80,23 +80,21 @@ Funciona. Nos ha extraído el fichero embebido "secret.txt". Si echamos un vista
 ![13](Images/13.png))
 
 
-Parece que está en base64. Vamos a intentar decodearlo:
+Parece que está en base64. Vamos a intentar decodificarlo:
 
 ``cat secret.txt | base64 -d``
 
 ![14](Images/14.png)
 
-
-eslacasadepinypon
+``eslacasadepinypon``
 
 Se intenta escalar a root con esta contraseña. No funciona.
 
-Si echamos un vistazo al /etc/passwd, vemos que existen otros usuarios:
+Si echamos un vistazo al /etc/passwd, vemos que existen otro usuario: ``oscar``
 
 ![15](Images/15.png)
 
-
-Vamos a intentar pivotar a oscar con esta contraseña.
+Vamos a intentar pivotar a ``oscar`` con esta contraseña.
 
 ``su oscar``
 
@@ -106,23 +104,21 @@ Vamos a intentar pivotar a oscar con esta contraseña.
 
 Hemos pivotado correctamente a oscar.
 
-# privesc
+# PRIVESC
 
 ``sudo -l``
-
 
 ![17](Images/17.png)
 
 
-Vemos que podemos ejecutar /usr/bin/ruby como sudo sin proporcionar contraseña de root.
+Vemos que podemos ejecutar ``/usr/bin/ruby`` como sudo sin proporcionar contraseña de root.
 
 https://gtfobins.github.io/gtfobins/ruby/#sudo
 
 ![18](Images/18.png)
 
-
 ``sudo /usr/bin/ruby -e 'exec "/bin/sh"'``
 
 ![19](Images/19.png)
 
-Hemos pivotado correctamente a root.
+Hemos escalado correctamente a root.
