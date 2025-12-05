@@ -25,7 +25,7 @@ Si decodificamos: `cat base64.txt|base64 -d`
 
 ![4](Images/4.png)
 
-Esto parece más publicidad del autor que otra cosa. Pero nos lo guardamos en ``decode.txt`` por si acaso.
+Esto parece más publicidad del autor que otra cosa, pero nos lo guardamos en ``decode.txt`` por si acaso.
 
 En el código fuente de la página podemos ver:
 
@@ -59,7 +59,7 @@ Podemos recoger la flag de usuario en el directorio personal de nuestro usuario:
 
 ![8](Images/8.png)
 
-Valor de local.txt: b1b0e19ead8d6f8226c51e06d0e45d70
+Valor de local.txt: ``b1b0e19ead8d6f8226c51e06d0e45d70``
 
 # PRIVESC
 
@@ -98,4 +98,4 @@ Hemos escalado correctamente a root. Podemos recoger la flag de root en ``/root/
 
 ![14](Images/14.png)
 
-Valor proof.txt: ae7db1fe928eec9ee886ba5e149437f0
+Valor proof.txt: ``ae7db1fe928eec9ee886ba5e149437f0``
