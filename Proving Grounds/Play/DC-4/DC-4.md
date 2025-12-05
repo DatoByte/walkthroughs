@@ -64,7 +64,7 @@ Si mandamos la petición y vemos la respuesta:
 
 ![12](Images/12.png)
 
-Y si metemos un ``ls-la``, ¿se verán los archivos ocultos?
+Y si metemos un ``ls -la``, ¿se verán los archivos ocultos?
 
 ![13](Images/13.png)
 
@@ -76,7 +76,7 @@ Confirmamos, los vemos.
 
 Perfect, funciona.
 
-Pues es el momento de intentar la vieja confiable: busybox.
+Pues es el momento de intentar la vieja confiable: ``busybox``.
 
 - Levantamos listener en máquina atacante: ``nc -nvlp 80``
 
@@ -100,7 +100,7 @@ En el directorio personal del usuario ``jim`` podemos ver la flag de user:
 
 local.txt = ``9c2b34fdf05d54faae232203ac61e08f``
 
-# privesc
+# Privesc
 
 En el directorio personal de ``jim``, además de la flag de user, vemos algo muy curioso:
 
