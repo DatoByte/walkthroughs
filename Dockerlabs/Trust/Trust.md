@@ -31,7 +31,7 @@ No parece que encontremos nada más de utilidad, por lo que se decide lanzar fue
 
 ![6](Images/6.png)
 
-Estupendo, tenemos credenciales válidas: ``mario``:``chocolae``. Podemos conectarnos por ``ssh`` a la máquina víctima.
+Estupendo, tenemos credenciales válidas: ``mario``:``chocolate``. Podemos conectarnos por ``ssh`` a la máquina víctima.
 
 ``ssh mario@172.17.0.2``
 
