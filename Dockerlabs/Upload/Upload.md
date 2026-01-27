@@ -30,7 +30,7 @@ Nos saca ``/uploads``. Muy interesante:
 
 ![6](Images/6.png)
 
-Vale, dado que tenemos posibilidad de subida de archivos y suponemos dónde irán a parar, vamos a probar a subir un .php directamente, y si nos lo niega, intentaremos bypassearlo.
+Vale, dado que tenemos posibilidad de subida de archivos y suponemos dónde irán a parar, vamos a probar a subir un .php directamente, y si no está permitido, intentaremos bypassearlo.
 
 Vamos a nuestra revshell de confianza: pentestmonkey.
 
