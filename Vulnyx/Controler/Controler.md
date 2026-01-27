@@ -38,13 +38,9 @@ Se continua utilizando otro diccionario:``A-Z.Surnames``, pero esta vez con éxi
 
 ![6](Images/6.png)
 
-Tenemos un usuario válido a nivel de dominio: ``B.LEWIS``
+Tenemos un usuario válido a nivel de dominio: ``b.lewis``. Nos lo guardamos en ``users.txt``.
 
-Vale, ya tenemos un usuario, aunque no su contraseña, es un buen comienzo.
-
-Ahoraa podemos comprobar si este usuario tiene setteada la opción ``Dont-require-preAuth
-
-No obstante, sólo con conocer el usuario podemos comprobar si tiene setteada la opción ``Dont-require-pre-auth`` (no viene de forma default), a través de la técnica ``as-rep roasting attack``. De ser así, podremos obtener su hash, crackearlo de forma offline y obtener la contraseña en texto claro:
+Vale, tenemos un usuario válido a nivel de dominio. Aunque no conozcamos su contraseña, es un buen comienzo. Sólo con conocer uno o más usuarios válidos de dominio podemos comprobar si está setteada la opción ``Dont-require-pre-auth`` (no viene de forma default), a través de la técnica ``as-rep roasting attack``. De ser así, podremos obtener su hash, crackearlo de forma offline y obtener la contraseña en texto claro:
 
 ``impacket-GetNPUsers -no-pass -usersfile users.txt control.nyx/ -output hashes.asreproast``
 
@@ -60,7 +56,7 @@ Para pasárselo a la herramienta ``hashcat`` y poder crackearlo, necesitamos con
 
 Código 18200. 
 
-Una vez sabemos el código, podemos intentar romperlo con un diccionario. Se utiliza el clásico ``rockyou``.
+Una vez sabemos el código interno de hashcat, podemos intentar romperlo con un diccionario. Se utiliza el clásico ``rockyou``.
 
 ``hashcat -m 18200 hashes.asreproast /usr/share/wordlists/rockyou.txt --force``
 
@@ -68,13 +64,13 @@ Una vez sabemos el código, podemos intentar romperlo con un diccionario. Se uti
 
 Ojo. Credenciales conseguidas: ``b.lewis``:``101Music``
 
-Comprobamos que son credenciales válidas con ``netexec``:
+Comprobamos que, efectivamente, son credenciales válidas con ``netexec``:
 
 ``netexec smb 10.10.10.29 -u 'b.lewis' -p '101Music'``
 
 ![10](Images/10.png)
 
-Tenemos credenciales válidas a nivel de dominio y podemos empezar a enumerar:
+Estupendo, podemos empezar a enumerar.
 
 Por ejemplo, podemos intentar enumerar el resto de los usuarios del dominio a través de SMB (``--rid-brute``) o RPC (``enumdomusers``):
 
@@ -104,9 +100,9 @@ Y buscamos el fichero: ``domain_users.html``
 
 ![14](Images/14.png)
 
-El usuario ``j.levy`` forma parte del grupo ``Remote Management Users``, lo que nos permitiría conectarnos por winRM.
+El usuario ``j.levy`` forma parte del grupo ``Remote Management Users``, lo que nos permitiría conectarnos por winRM. Esto lo convierte en un usuario objetivo al que intentar pivotar.
 
-Dado que no hemos encontrado nada interesante en relación a este usuario que pueda servir como su contraseña, se decide lanzar fuerza bruta con el diccionario ``rockyou``:
+Dado que no hemos encontrado nada interesante en relación a este usuario que pueda servir como su contraseña, se decide lanzar fuerza bruta, nuevamente, con el diccionario ``rockyou``:
 
 ``netexec smb 10.10.10.29 -u 'j.levy' -p /usr/share/wordlists/rockyou.txt --ignore-pwd-decoding | grep -v '[-]'``
 
