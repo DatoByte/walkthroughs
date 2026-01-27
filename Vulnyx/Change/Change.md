@@ -3,6 +3,7 @@
 Comenzamos enumerando los puertos abiertos de la máquina víctima con ``nmap``:
 
 ``sudo nmap 10.10.10.31 -sS -p- --open --min-rate 5000 -n -Pn -oG allPorts``
+
 ![1](Images/1.png)
 
 Vale. Tiene una pinta de DC que no puede con ella, pero vamos a pasar otro escaneo con ``nmap`` a los puertos que sabemos que están abiertos para que nos reporte con más exactitud qué servicios y versiones están corriendo.
@@ -28,6 +29,7 @@ Lo primero que tenemos que intentar es sacar algún usuario válido a nivel de d
 Se intenta enumerar usuarios a través de RPC con Null y Guest, pero no permite enumeración (access denied + account disabled).
 
 ``rpcclient -U '' 10.10.10.31 -N  ``
+
 ![6](Images/6.png)
 
 Se intenta también a través de LDAP y SMB, pero sin éxito.
