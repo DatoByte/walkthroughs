@@ -138,7 +138,7 @@ Pero wiño, ¿tenemos realmente las credenciales de administrator? Vamos a valid
 
 ![22](Images/22.png)
 
-Ojo cuidao'. Pues podemos entrar hasta la cocina.
+Ojo cuidao', podemos entrar hasta la cocina.
 
 ``impacket-psexec 'administrator':'d0m@in_c0ntr0ll3r'@10.10.10.31``
 
