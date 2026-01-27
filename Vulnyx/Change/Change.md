@@ -34,7 +34,7 @@ Se intenta enumerar usuarios a través de RPC con Null y Guest, pero no permite 
 
 Se intenta también a través de LDAP y SMB, pero sin éxito.
 
-Dado que no podemos enumerar usuarios a través de SMB, RPC, LDAP, solo queda hacer uso de fuerza bruta a través de ``Kerbrute``. Se comienza utilizando el diccionario ``A-Z.Surnames.txt``.
+Dado que no podemos enumerar usuarios a través de SMB, RPC, LDAP, solo queda hacer uso de fuerza bruta a través de ``Kerbrute``. Se comienza utilizando el diccionario ``A-Z.Surnames.txt`` del repositorio ``https://github.com/attackdebris/kerberos_enum_userlists``:
 
 ``kerbrute userenum --dc 10.10.10.31 -d megachange.nyx ~/Pentest/Tools/kerberos_enum_userlists/A-Z.Surnames.txt``
 
@@ -42,7 +42,7 @@ Dado que no podemos enumerar usuarios a través de SMB, RPC, LDAP, solo queda ha
 
 Pero no nos encuentra nada con lo que empezar a jugar.
 
-Podemos utilizar otro diccionario de nombres muy común: Xato.
+Dado que no encuentra nada, podemos utilizar otros diccionarios de nombres, como el muy conocido ``xato-net-10-million-usernames.txt`` del repositorio de seclists (``https://github.com/danielmiessler/SecLists``):
 
 ``kerbrute userenum --dc 10.10.10.31 -d megachange.nyx /usr/share/seclists/Usernames/xato-net-10-million-usernames.txt``
 
