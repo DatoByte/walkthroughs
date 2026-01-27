@@ -164,6 +164,6 @@ Una vez tenemos el hash NTLM del usuario Administrator, podemos hacer uso del mi
 
 Bingo.
 
-Recogemos la flag de Administrator en ``C:\Users\Administrator\Desktop\root.txt``:
+Podemos recoger la flag de Administrator en ``C:\Users\Administrator\Desktop\root.txt``:
 
 ![24](Images/24.png)
