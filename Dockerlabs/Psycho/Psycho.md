@@ -1,3 +1,5 @@
+![0](Images/0.png)
+
 Comenzamos lanzando un ping para confirmar que tenemos conectividad con la máquina víctima.
 
 ![1](Images/1.png)
@@ -40,6 +42,7 @@ Se procede a hacer fuerza bruta de directorios con ``feroxbuster`` y ``directory
 No parece sacarnos nada interesante, por lo que se decide intentar fuerza bruta de parámetros con ``wfuzz`` y ``burp-parameter-names.txt`` como diccionario.
 
 ``fuzz -c --hc=404 --hl=62 -t 150 -w /usr/share/seclists/Discovery/Web-Content/burp-parameter-names.txt 'http://172.17.0.2/index.php?FUZZ=/etc/hosts'``
+
 ![8](Images/8.png)
 
 Ojo. El parámetro ``secret`` existe.
@@ -49,6 +52,7 @@ Ojo. El parámetro ``secret`` existe.
 Y ya no aparece ese ``[!] ERROR [!]``, sino el contenido del ``/etc/hosts``.
 
 Y si lo vemos a través del código fuente:
+
 ![10](Images/10.png)
 
 Esto son muy buenas noticias. 
@@ -71,7 +75,7 @@ Aquí se abren varias vectores:
 - A través del LFI, enumerar e intentar encontrar alguna id_rsa u otros archivos de utilidad.
 
 Por ejemplo, para saber realmente cómo funciona por detrás el parámetro ``secret``, podemos:
-- A través de wrapper filter.base64 sacar el index.php.
+- A través de wrapper ``filter.base64`` sacar el index.php.
 - Traernos a nuestra máquina víctima todo el contenido.
 - Decodificar el base64.
 - Ver qué función de php está dentro del parámetro secret.
@@ -88,11 +92,12 @@ Acto seguido, decodificamos:
 ``cat base64.data | base64 -d > index.php``
 
 Ahora podemos inspeccionar el código php:
+
 ![14](Images/14.png)
 
-Aquí tenemos el origen de ese ``[!] ERROR [!]`` que veíamos inicialmente. A su vez, vemos que el parámetro ``secret`` está utilizando la función ``include``, que sabemos que es vulnerable y lo que está permitiendo el LFI.
+Aquí tenemos el origen de ese ``[!] ERROR [!]`` que veíamos inicialmente. A su vez, vemos que el parámetro ``secret`` está utilizando la función ``include``, que sabemos que es vulnerable y está permitiendo el LFI.
 
-Vale, tenemos acceso a cualquier archivo del sistema que el usuario www-data (el que esté corriendo por detrás) tenga acceso. Si investigamos en posibles rutas interesantes:
+Vale, tenemos acceso a cualquier archivo del sistema que el usuario ``www-data`` (el que esté corriendo por detrás) tenga acceso. Si investigamos en posibles rutas interesantes, se termina encontrando:
 
 ``view-source:http://172.17.0.2/index.php?secret=/home/vaxei/.ssh/id_rsa``
 
@@ -191,4 +196,4 @@ Nos saca un output enorme. Lo que tenemos que hacer es invocar el parámetro vul
 
 ![28](Images/28.png)
 
-Bingo. Confirmamos RCE.
+Bingo. Confirmamos RCE. Y de paso, confirmamos el motivo por el que antes pudimos ver el contenido del  directorio personal del usuario ``vaxei`` y acceder a su ``id_rsa`` dentro de ``/home/vaxei/.ssh`` desde un contexto de ejecución de ``www-data``.
