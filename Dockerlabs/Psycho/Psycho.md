@@ -155,9 +155,9 @@ No obstante, si nos fijamos en los permisos de ``/opt``:
 
 ![23](Images/23.png)
 
-Tenemos permisos de escritura/modificación en ``/opt``, lo cual no debería ser así. Esto significa que podemos borrar ``paw.py`` y generar otro a nuestro antojo.
+Tenemos permisos de escritura/modificación en ``/opt``, lo cual no debería ser así. Esto significa que podemos borrar ``paw.py`` y generar otro a nuestro antojo:
 
-Nos guardamos el script original:
+- Nos guardamos el script original:
 
 ![24](Images/24.png)
 
