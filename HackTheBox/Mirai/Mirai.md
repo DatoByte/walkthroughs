@@ -1,4 +1,4 @@
-![1](Images/1.png)
+![1](Images/01.png)
 
 Se comienza con una fase de enumeración de puertos sobre la máquina objetivo, con el fin de identificar qué puertos se encuentran abiertos.
 
