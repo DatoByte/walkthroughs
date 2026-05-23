@@ -6,7 +6,7 @@ Se comienza con una fase de enumeración de puertos sobre la máquina objetivo, 
 
 ![2](Images/2.png)
 
-Se identifica el puerto 80/tcp abierto. Aunque este puerto suele asociarse al servicio HTTP por convención (_well-known ports_), no puede asumirse su ejecución sin una enumeración más detallada. Por ello, se realiza un segundo escaneo con scripts de enumeración y detección de versiones, con el objetivo de identificar el servicio, su versión y recopilar información adicional que permita evaluar posibles vectores de ataque.
+Se identifica el puerto 80/tcp abierto. Aunque este puerto suele asociarse al protocolo HTTP por convención (_well-known ports_), no puede asumirse qué servicio se encuentra expuesto sin una enumeración más detallada. Por ello, se realiza un segundo escaneo con scripts de enumeración y detección de versiones, con el objetivo de identificar el servicio, su versión y recopilar información adicional que permita evaluar posibles vectores de ataque.
 
 
 ``nmap 10.129.27.201 -sCV -p80 -oN target``
