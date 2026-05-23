@@ -16,7 +16,7 @@ Al acceder directamente al servicio HTTP mediante la IP, el navegador muestra un
 
 ![4](Images/4.png)
 
-Para solucionarlo, se añade una entrada arbitraria al archivo ``/etc/hosts``, asociado el dominio inventado con la IP de la máquina víctima.
+Para solucionarlo, se añade una entrada arbitraria al archivo ``/etc/hosts``, asociando el dominio inventado con la IP de la máquina víctima.
 
 ![5](Images/5.png)
 
