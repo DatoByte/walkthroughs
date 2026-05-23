@@ -1,9 +1,10 @@
 # 🧠 Walkthroughs de CTFs
 
-Este repositorio es mi pequeña forma de aportar a la comunidad, especialmente a quienes están empezando en el mundo del pentesting, igual que otras personas lo hicieron conmigo.
+Este repositorio recopila write-ups y notas técnicas de máquinas resueltas en diferentes plataformas de pentesting y laboratorios de seguridad ofensiva.
 
-Aquí iré subiendo los write-ups de máquinas que he resuelto en plataformas como:
+El objetivo es documentar metodologías, técnicas de enumeración, explotación y post-explotación, además de servir como recurso de aprendizaje para personas que estén comenzando en el ámbito del pentesting y la ciberseguridad ofensiva.
 
+Los write-ups estarán organizados para facilitar su navegación y consulta por plataformas:
 - Hack The Box
 - Proving Grounds
 - TryHackMe
@@ -11,8 +12,6 @@ Aquí iré subiendo los write-ups de máquinas que he resuelto en plataformas co
 - The Hackers Labs
 - The Pwn Labs
 - VulNyx
-- ...y otras que vayan surgiendo por el camino 🚀
-
-Los write-ups estarán organizados por su plataforma de origen para que se puedan encontrar fácilmente los recursos.
+- Otras plataformas y laboratorios que vaya realizando
 
 ¡Enjoy & happy hacking!
