@@ -1,8 +1,9 @@
 ![1](Images/1.png)
 
-Se realiza una  enumeración inicial de puertos sobre la máquina objetivo, con el fin de identificar qué puertos se encuentran abiertos.
+Se realiza una enumeración inicial de puertos sobre la máquina objetivo, con el fin de identificar qué puertos se encuentran abiertos.
 
 ``sudo nmap 10.129.234.66 -sS -p- --open --min-rate 5000 -n -Pn -oG allPorts``
+
 ![2](Images/2.png)
 
 A partir de los puertos detectados, se realiza un análisis más detallado con el objetivo de identificar los servicios asociados, sus versiones y recopilar información adicional mediante scripts de enumeración, lo que permite evaluar posibles vectores de ataque.
@@ -40,7 +41,7 @@ Si se analizan los permisos accesibles mediante una null session:
 
 ![9](Images/9.png)
 
-Se tiene READ en: ``IPC$``, ``sendai``, ``Users``. La existencia de permisos de lectura mediante ``null session`` sobre recursos SMB no predeterminados puede provocar exposición de información sensible, permitiendo enumeración interna sin autenticación.
+Se posee READ en: ``IPC$``, ``sendai``, ``Users``. La existencia de permisos de lectura mediante ``null session`` sobre recursos SMB no predeterminados puede provocar exposición de información sensible, permitiendo enumeración interna sin autenticación.
 
 Descripción del directorio compartido ``sendai``: ``Company share``. Puede ser un buen directorio por el que comenzar.
 
@@ -77,6 +78,8 @@ Otra cosa que llama la atención, dentro del directorio ``transfer``, es un dire
 
 No creo que ``temp`` sea un usuario, pero lo mantenemos por si acaso.
 
+``kerbrute userenum --dc 10.129.234.66 -d sendai.vl users.txt``
+
 ![15](Images/15.png)
 
 Se valida la existencia a nivel de dominio de todos los usuarios, excepto ``temp``, por lo que el diccionario de usuarios queda así:
@@ -94,7 +97,7 @@ Tímidamente, se utiliza el propio nombre de los usuarios como su propia contras
 
 Sin éxito.
 
-Se prueba una cadena vacía como contraseña (es decir, que NO tienen contraseña):
+Se prueba la autenticación utilizando una contraseña vacía (``''``) para todos los usuarios, con el objetivo de identificar cuentas sin credenciales establecidas o mal configuradas.
 
 ``netexec smb 10.129.234.66 -u users.txt -p '' ``
 
@@ -104,7 +107,7 @@ Los usuarios ``elliot.yates`` y ``thomas.powell`` deben que modificar su contras
 
 Esto plantea un escenario interesante: si un atacante puede autenticarse utilizando las credenciales actuales, podría potencialmente establecer una nueva contraseña arbitraria y tomar control completo de la cuenta.
 
-Existe un módulo de netexec que permite modificar la contraseña del propio usuario con el que realiza la autenticación:
+Existe un módulo de ``netexec`` que permite modificar la contraseña del propio usuario con el que realiza la autenticación:
 
 ``netexec smb 10.129.234.66 -u thomas.powell -p '' -M change-password -o NEWPASS=Password01``
 
@@ -114,7 +117,7 @@ Existe un módulo de netexec que permite modificar la contraseña del propio usu
 
 ![20](Images/20.png)
 
-Una vez se ha modificado la contraseña de ambos usuarios, se valida con netexec si alguno puede conectarse por winRM o RDP, pero ninguno de los dos puede para ninguno de los dos protocolos.
+Una vez se ha modificado la contraseña de ambos usuarios, se valida con ``netexec`` si alguno puede conectarse por winRM o RDP, pero ninguno de los dos puede para ninguno de los dos protocolos.
 
 A su vez, dado que se tienen credenciales válidas a nivel de dominio, se puede listar la política de contraseñas:
 
@@ -132,15 +135,17 @@ También se pueden extraer todos los usuarios del dominio:
 
 ![22](Images/22.png)
 
-Se vuelve a utilizar kerbrute para validar todos estos usuarios:
+Se vuelve a utilizar ``kerbrute`` para validar todos estos usuarios:
+
+``kerbrute userenum --dc 10.129.234.66 -d sendai.vl ridusers.txt``
 
 ![23](Images/23.png)
 
-Se repite netexec con ``-p ''`` para todos los usuarios, pero no hay más usuarios que deban cambiar su contraseña.
+Se repite ``netexec`` con ``-p ''`` para todos los usuarios, pero no hay más usuarios que deban cambiar su contraseña.
 
-Se prueba asreproasting, por si hubiese algún usuario que tiene seteada la opción NoPreauthUser, pero no se consigue extraer ningún hash.
+Se prueba asreproasting, por si hubiese algún usuario que tiene seteada la opción ``DONT_REQ_PREAUTH``, pero no se consigue extraer ningún hash ``AS-REP``.
 
-Se prueba kerberoasting:
+Se prueba ``kerberoasting``:
 
 ``impacket-GetUserSPNs -request -dc-ip 10.129.234.66 sendai.vl/thomas.powell:'Password01' -dc-host 'dc.sendai.vl' -outputfile kerberoasthash``
 
@@ -159,17 +164,17 @@ A su vez, gracias a tener credenciales válidas a nivel de dominio, se puede hac
 
 - Se levanta neo4j: ``sudo neo4j start``
 
-- Se levanta bloodhound: ``sudo bloodhound &>/dev/null & disown``
+- Se levanta ``Bloodhound``: ``sudo bloodhound &>/dev/null & disown``
 
-- Introducimos nuestras credenciales de BloodHound
+- Introducimos nuestras credenciales de ``BloodHound``.
 
-- Una vez se tiene acceso al dashboard de BloodHound, subimos la data recolectada:
+- Una vez se tiene acceso al dashboard de ``BloodHound``, subimos la data recolectada:
 
 ![27](Images/27.png)
 
-El objetivo de utilizar BloodHound es identificar relaciones de privilegios, delegaciones y vectores de ataque que permitan escalar privilegios dentro del dominio.
+El objetivo de utilizar ``BloodHound`` es identificar relaciones de privilegios, delegaciones y vectores de ataque que permitan escalar privilegios dentro del dominio.
 
-- Se marca como owned los dos usuarios que tenemos comprometidos:
+- Se marca como ``owned`` los dos usuarios que tenemos comprometidos:
 
 ![28](Images/28.png)
 
@@ -184,7 +189,7 @@ Si se analizan los nodos de los usuarios que tenemos comprometidos, se observa:
 
 El grupo ``support``, al que pertenecen ambos usuarios comprometidos (y, por tanto, heredan los privilegios), posee el privilegio ``GenericAll`` sobre:
 
-- el grupo ``ADMSVC``
+- el grupo ``ADMSVC``.
 - la OU ``ADMSVC``.
 
 El permiso ``GenericAll`` equivale a control total sobre el objetivo. Por ello, una posible vía de explotación sería añadir al grupo ``ADMSVC`` a uno de los dos usuarios que actualmente se poseen. 
@@ -226,13 +231,13 @@ https://github.com/micahvandeusen/gMSADumper
 
 ![36](Images/36.png)
 
-- Se confirma que el usuario ``mgtsvc$`` puede conectarse por winRM
+- Se confirma que el usuario ``mgtsvc$`` puede conectarse por winRM:
 
 ``netexec winrm 10.129.234.66 -u 'mgtsvc$' -H '79ce2a2c1488fba8ef0aeaeaed141050'``
 
 ![37](Images/37.png)
 
-- Se utilizan las credenciales obtenidas para realizar [[Pass The Hash]] y acceder a la máquina víctima:
+- Se utilizan las credenciales obtenidas para realizar ``Pass The Hash`` y acceder a la máquina víctima:
 
 ``evil-winrm -i 10.129.234.66 -u 'mgtsvc$' -H '79ce2a2c1488fba8ef0aeaeaed141050'``
 
@@ -243,7 +248,7 @@ Se puede recoger la flag de usuario en ``C:\``:
 
 ![39](Images/39.png)
 
-Y se puede marcar como usuario owned en BloodHound:
+Y se puede marcar como usuario owned en ``BloodHound``:
 
 ![40](Images/40.png)
 
@@ -257,7 +262,7 @@ Realizando una enumeración interna de la máquina víctima se encuentra:
 
 ``clifford.davey``:``RFmoB2WplgE_3p``
 
-Se validan credenciales con netexec:
+Se validan credenciales con ``netexec``:
 
 ``netexec smb 10.129.234.66 -u 'clifford.davey' -p 'RFmoB2WplgE_3p'``
 
@@ -297,7 +302,7 @@ De forma resumida, los pasos a seguir son los siguientes:
 
 ![47](Images/47.png)
 
-Entidad certificadora -> sendai-DC-CA
+Entidad certificadora -> ``sendai-DC-CA``
 
 Como se va a realizar una explotación vía certificados, es necesario sincronizar la hora con el DC:
 
@@ -320,7 +325,7 @@ certipy-ad template -u 'clifford.davey' -p 'RFmoB2WplgE_3p' -dc-ip 10.129.234.66
 ![49](Images/49.png)
 
 
--> Los cambios que puede haber:
+Cambios que se pueden observar:
 
 - `Enrollee Supplies Subject`  ahora `True`. Esto permite que el solicitante especifique arbitrariamente el ``Subject Alternative Name`` (SAN) del certificado, pudiendo solicitar certificados válidos para otros usuarios del dominio.
 
@@ -331,7 +336,7 @@ Tras aplicar estas modificaciones, la plantilla pasa a ser explotable mediante e
 
 - Paso 3: Solicitud de certificado usando la template modificada para el usuario ``administrator``. 
 
-Podemos conocer su SID a través de su nodo en bloodhound:
+Podemos conocer su SID a través de su nodo en ``Bloodhound``:
 
 ![50](Images/50.png)
 
@@ -352,7 +357,7 @@ certipy-ad auth -pfx administrator.pfx -dc-ip 10.129.234.66
 
 Hash NTLM obtenido: ``cfb106feec8b89a3d98e14dcbe8d087a``
 
-Una vez se ha obtenido el hash NTLM del usuario ``administrator``, se utiliza la técnica [[Pass The Hash]] para autenticarse vía WinRM:
+Una vez se ha obtenido el hash NTLM del usuario ``administrator``, se utiliza la técnica ``Pass The Hash`` para autenticarse vía WinRM:
 
 ``evil-winrm -i 10.129.234.66 -u 'administrator' -H 'cfb106feec8b89a3d98e14dcbe8d087a'``
 
