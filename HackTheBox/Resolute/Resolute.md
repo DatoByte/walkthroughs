@@ -165,7 +165,7 @@ El usuario ``ryan`` puede conectarse a la máquina víctima mediante WinRM:
 
 ``evil-winrm -i 10.129.96.155 -u 'ryan' -p 'Serv3r4Admin4cc123!'``
 
-Dentro del escritorio de Ryan encontramos ``note.txt``:
+Dentro del escritorio de Ryan se encuentra ``note.txt``:
 
 ![24](Images/24.png)
 
